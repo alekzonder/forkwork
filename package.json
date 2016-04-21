@@ -1,0 +1,25 @@
+{
+  "name": "forkwork",
+  "version": "0.1.0",
+  "description": "fork manager",
+  "main": "index.js",
+  "scripts": {},
+  "publishConfig": {
+    "registry": "http://sinopia.app.s/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@git.rn/~a.vasilenko/forkwork.git"
+  },
+  "author": "Aleksandr Vasilenko <a.vasilenko@office.ngs.ru>",
+  "license": "UNLICENCED",
+  "dependencies": {
+    "joi": "^8.0.5",
+    "lodash": "^4.11.1",
+    "log4js": "^0.6.35"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5"
+  }
+}

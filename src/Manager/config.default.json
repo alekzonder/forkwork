@@ -1,0 +1,7 @@
+{
+    "forkCount": 3,
+    "worker": {
+        "startupTimeout": 10000
+    },
+    "cwd": null
+}
