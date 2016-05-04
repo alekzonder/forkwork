@@ -12,11 +12,24 @@ var defaultConfig = require('./config.default');
 var Worker = require('./Worker');
 var ManagerWorkerChannel = require('./channels/ManagerWorker');
 
-class ForkManager {
+/**
+ * manager of workers
+ *
+ * @class
+ */
+class Manager {
 
-    constructor(logger, rawConfig) {
+    /**
+     * @constructor
+     *
+     * @param  {log4js} logger
+     * @param  {Object} rawConfig
+     */
+    constructor(log4js, rawConfig) {
 
-        this._logger = logger;
+        this._log4js = log4js;
+
+        this._logger = this._log4js.getLogger('manager');
 
         this._rawConfig = rawConfig;
 
@@ -31,15 +44,27 @@ class ForkManager {
         this._workerEvents = new EventEmitter();
 
         this._workerChannel = new ManagerWorkerChannel(this._logger, this._workerEvents);
+
+        this._logger.trace('constructor done');
     }
 
+    /**
+     * init and start workers
+     *
+     * @return {Promise}
+     */
     up() {
 
         return new Promise((resolve, reject) => {
 
+            this._logger.trace('up started');
+
             this._initListeners();
 
-            this._prepareConfig(this._rawConfig)
+            this._checkLoggerInterface()
+                .then(() => {
+                    return this._prepareConfig(this._rawConfig);
+                })
                 .then((config) => {
 
                     this._config = config;
@@ -56,10 +81,14 @@ class ForkManager {
 
                         this._logger.debug(`starting worker ${i}`, workerConfig);
 
-                        this._workers[i] = new Worker(this._logger, workerConfig);
+                        var workerLogger = this._log4js.getLogger(`manager-worker-${i}`);
+
+                        this._workers[i] = new Worker(workerLogger, workerConfig);
+
+                        var workerChannelLogger = this._log4js.getLogger(`workerChannel-${i}`);
 
                         var workerChannel = new ManagerWorkerChannel(
-                            this._logger,
+                            workerChannelLogger,
                             this._workerEvents,
                             this._workers[i]
                         );
@@ -71,7 +100,7 @@ class ForkManager {
                     Promise.all(promises)
                         .then((data) => {
                             this._logger.trace('workers up result', data);
-                            resolve();
+                            resolve(data);
                         })
                         .catch((error) => {
                             reject(error);
@@ -88,6 +117,11 @@ class ForkManager {
 
     }
 
+    /**
+     * shutdown workers and exit
+     *
+     * @return {Promise}
+     */
     shutdown() {
 
         return new Promise((resolve, reject) => {
@@ -111,48 +145,73 @@ class ForkManager {
 
     }
 
-    status() {
-        return _.cloneDeep(this._workers);
-    }
-
+    /**
+     * on Fatal error callback
+     *
+     * @param  {Function} cb
+     */
     onFatal(cb) {
         this._events.on('fatal', cb);
     }
 
+    /**
+     * on Error callback
+     *
+     * @param  {Function} cb
+     */
     onError(cb) {
         this._events.on('error', cb);
     }
 
+    /**
+     * on close callback
+     *
+     * @param  {Function} cb
+     */
     onClose(cb) {
         this._events.on('close', cb);
     }
 
+    /**
+     * init manager listeners
+     *
+     * @private
+     */
     _initListeners() {
 
         this._workerChannel.onFatal((error, worker) => {
-            this._logger.trace(error, worker.id);
+            this._logger.trace('workerChannel:onFatal', error, worker.id);
             error.workerId = worker.id;
-            this._logger.fatal(error);
+            // this._logger.fatal(error);
             this._events.emit('fatal', error);
         });
 
         this._workerChannel.onError((error, worker) => {
-            this._logger.trace(error, worker.id);
+            this._logger.trace('workerChannel:noError', error, worker.id);
             error.workerId = worker.id;
-            this._logger.error(error);
+            // this._logger.error(error);
             this._events.emit('error', error);
         });
 
-        this._workerChannel.onClose((worker) => {
-            this._logger.trace('close', worker.id);
-            this._events.emit('close', worker.id);
+        this._workerChannel.onClose((code, worker) => {
+            this._logger.trace('workerChannel:onClose', code, worker.id);
+            this._events.emit('close', code, worker);
         });
 
     }
 
+    /**
+     * prepare config fork work
+     *
+     * @private
+     * @param  {Object} rawConfig
+     * @return {Promise}
+     */
     _prepareConfig(rawConfig) {
 
         return new Promise((resolve, reject) => {
+
+            this._logger.trace('preparing config');
 
             var extendedConfig = _.defaultsDeep(rawConfig, defaultConfig);
 
@@ -176,6 +235,13 @@ class ForkManager {
 
     }
 
+    /**
+     * check config format
+     *
+     * @private
+     * @param  {Object} config
+     * @return {Promise}
+     */
     _checkConfig(config) {
 
         var configSchema = {
@@ -201,6 +267,37 @@ class ForkManager {
         });
 
     }
+
+    /**
+     * check logger interface methods
+     *
+     * @private
+     * @return {Promise}
+     */
+    _checkLoggerInterface() {
+
+        return new Promise((resolve, reject) => {
+
+            this._logger.trace('checking logger interface');
+
+            var methods = ['trace', 'debug', 'info', 'error', 'fatal'];
+
+            _.each(methods, (method) => {
+
+                if (
+                    typeof this._logger[method] === 'undefined' ||
+                    typeof this._logger[method] !== 'function'
+                ) {
+                    reject(new Error(`logger must have method ${method}`));
+                    return false;
+                }
+
+            });
+
+            resolve();
+        });
+
+    }
 }
 
-module.exports = ForkManager;
+module.exports = Manager;

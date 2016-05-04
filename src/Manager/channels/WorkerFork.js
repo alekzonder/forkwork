@@ -2,8 +2,18 @@
 
 var EventEmitter = require('events').EventEmitter;
 
+/**
+ * @class
+ */
 class WorkerForkChannel {
 
+    /**
+     * manager -> worker, worker <- manager communication layer
+     *
+     * @constructor
+     * @param  {logger} logger
+     * @param  {ChildProcess} fork
+     */
     constructor(logger, fork) {
         this._id = null;
 
@@ -12,6 +22,8 @@ class WorkerForkChannel {
         this._fork = fork;
 
         this._events = new EventEmitter();
+
+        this._closed = false;
 
         var messageTypes = [
             'online'
@@ -59,6 +71,7 @@ class WorkerForkChannel {
     }
 
     close(code, worker) {
+        this._closed = true;
         this._events.emit('close', code, (this._worker) ? this._worker : worker);
     }
 
@@ -84,14 +97,23 @@ class WorkerForkChannel {
                 if (code == 0) {
                     resolve(true);
                 } else {
-                    reject(new Error('fork shutdown'));
+                    reject(new Error(`fork shutdown failed. code = ${code}`));
                 }
             });
         });
 
     }
 
+    isClosed() {
+        return this._closed;
+    }
+
     _send(type, data) {
+        if (this._closed) {
+            this._logger.debug(`can't send message to fork, channel closed`, data);
+            return;
+        }
+
         this._fork.send({
             type: type,
             data: data

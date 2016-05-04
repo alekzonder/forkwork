@@ -7,14 +7,28 @@ var WorkerChannel = require('./WorkerChannel');
 class ForkWorker {
 
     constructor(logger, config, eventEmitter) {
+
         this._logger = logger;
         this._config = config;
         this._events = eventEmitter;
 
         this._workerChannel = new WorkerChannel(logger);
+
+        this._preInit = null;
+        this._postInit = null;
+
+        this._shutdownCallback = null;
     }
 
-    up () {
+    get logger() {
+        return this._logger;
+    }
+
+    get config() {
+        return this._config;
+    }
+
+    up() {
 
         return new Promise((resolve, reject) => {
 
@@ -25,11 +39,20 @@ class ForkWorker {
                 // TODO check config
                 this._config = config;
 
-                this._init();
-
-                resolve();
+                new Promise((this._preInit) ? this._preInit : resolve => resolve())
+                    .then(() => {
+                        return this._init();
+                    })
+                    .then(() => {
+                        return new Promise((this._postInit) ? this._postInit : resolve => resolve());
+                    })
+                    .then(() => {
+                        resolve();
+                    })
+                    .catch((error) => {
+                        reject(error);
+                    });
             });
-
 
         });
 
@@ -40,20 +63,39 @@ class ForkWorker {
     }
 
     onShutdown(cb) {
-        // var done = () => {
-        //     process.exit();
-        // };
-        //
-        // this._workerChannel.onShutdown(() => {
-        //     cb(done);
-        // });
+        this._shutdownCallback = cb;
+    }
+
+    preInit(cb) {
+        this._preInit = cb;
+        return this;
+    }
+
+    postInit(cb) {
+        this._postInit = cb;
+        return this;
     }
 
     _init() {
-        this._workerChannel.onShutdown(() => {
-            this._logger.debug(`worker ${this._config.id} shutdown`);
-            process.exit();
+
+        return new Promise((resolve, reject) => {
+
+            this._workerChannel.onShutdown(() => {
+                var done = () => {
+                    this._logger.debug(`worker ${this._config.id} shutdown`);
+                    process.exit();
+                };
+
+                if (this._shutdownCallback) {
+                    this._shutdownCallback(done);
+                } else {
+                    done();
+                }
+            });
+
+            resolve();
         });
+
     }
 
 }

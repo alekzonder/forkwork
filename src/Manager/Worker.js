@@ -4,12 +4,23 @@ var child = require('child_process');
 var EventEmitter = require('events').EventEmitter;
 
 var _ = require('lodash');
-var log4js = require('log4js');
 
 var ForkChannel = require('./channels/WorkerFork');
 
-class ForkWorker {
+/**
+ * Abstraction for child_process.fork
+ *
+ * @class
+ */
+class ManagerWorker {
 
+    /**
+     * internal manager object for communcation with forks
+     *
+     * @constructor
+     * @param  {logger} logger
+     * @param  {Object} config
+     */
     constructor(logger, config) {
 
         this._logger = logger;
@@ -27,10 +38,21 @@ class ForkWorker {
         this._forkChannel = null;
     }
 
+    /**
+     * worker id
+     *
+     * @return {String}
+     */
     get id() {
         return this._config.id;
     }
 
+    /**
+     * startup fork
+     *
+     * @param  {WorkerForkChannel} workerChannel
+     * @return {Promise}
+     */
     up(workerChannel) {
 
         return new Promise((resolve, reject) => {
@@ -52,11 +74,16 @@ class ForkWorker {
 
             this._forkChannel.id = this._config.id;
 
+            var that = this;
+
             this._forkChannel.onClose((code) => {
+                this._forkChannel.close();
+
                 if (code != 0) {
-                    this._workerChannel.fatal(new Error(`worker exit with code = ${code}`));
+                    this._workerChannel.fatal(new Error(`worker "${this.id}" exit with code = ${code}`));
+                    this._workerChannel.close(code, this);
                 } else {
-                    this._workerChannel.close();
+                    this._workerChannel.close(code, this);
                 }
             });
 
@@ -85,16 +112,43 @@ class ForkWorker {
 
     }
 
+    /**
+     * shutdown fork
+     *
+     * @return {Promise}
+     */
+    shutdown() {
+
+        return new Promise((resolve, reject) => {
+
+            if (this._forkChannel.isClosed()) {
+                return resolve();
+            }
+
+            this._forkChannel.shutdown()
+                .then(() => {
+                    resolve();
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+
+        });
+
+
+    }
+
+    /**
+     * init fork
+     *
+     * @private
+     */
     _init() {
         this._forkChannel.init({
             id: this._config.id
         });
     }
 
-    shutdown() {
-        return this._forkChannel.shutdown();
-    }
-
 }
 
-module.exports = ForkWorker;
+module.exports = ManagerWorker;

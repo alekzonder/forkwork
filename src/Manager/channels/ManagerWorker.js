@@ -31,7 +31,7 @@ class ManagerWorkerChannel {
     }
 
     onClose(cb) {
-        this._events.on('fatal', cb);
+        this._events.on('close', cb);
     }
 
     close(code, worker) {

@@ -1,9 +1,12 @@
 {
   "name": "forkwork",
   "version": "0.1.0",
-  "description": "fork manager",
+  "description": "task manager using forks",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "./node_modules/.bin/mocha tests",
+    "docs": "./node_modules/.bin/jsdoc ./ -c ./.jsdoc.json --verbose && open ./docs/index.html"
+  },
   "publishConfig": {
     "registry": "http://sinopia.app.s/"
   },
@@ -11,8 +14,8 @@
     "type": "git",
     "url": "ssh://git@git.rn/~a.vasilenko/forkwork.git"
   },
-  "author": "Aleksandr Vasilenko <a.vasilenko@office.ngs.ru>",
-  "license": "UNLICENCED",
+  "author": "alekzonder <alekzonder@gmail.com>",
+  "license": "MIT",
   "dependencies": {
     "joi": "^8.0.5",
     "lodash": "^4.11.1",
@@ -20,6 +23,11 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "mocha": "^2.4.5"
+    "chai-as-promised": "^5.3.0",
+    "deride": "^0.5.3",
+    "jsdoc": "^3.4.0",
+    "minami": "^1.1.1",
+    "mocha": "^2.4.5",
+    "rewire": "^2.5.1"
   }
 }
