@@ -4,7 +4,9 @@ var log4js = require('log4js');
 
 var config = {
     appenders: [
-        {type: 'console'}
+        {
+            type: 'console'
+        }
     ],
     levels: {
         '[all]': 'TRACE'
@@ -88,8 +90,6 @@ manager.onClose((code, worker) => {
 
 manager.up()
     .then((result) => {
-
-        console.log(result);
 
         logger.info(`${result.length} workers online`);
 

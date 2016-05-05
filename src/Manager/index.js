@@ -10,7 +10,7 @@ var joi = require('joi');
 var defaultConfig = require('./config.default');
 
 var Worker = require('./Worker');
-var ManagerWorkerChannel = require('./channels/ManagerWorker');
+var ManagerToWorkerChannel = require('./channels/ManagerToWorker');
 
 /**
  * manager of workers
@@ -43,7 +43,7 @@ class Manager {
 
         this._workerEvents = new EventEmitter();
 
-        this._workerChannel = new ManagerWorkerChannel(this._logger, this._workerEvents);
+        this._workerChannel = new ManagerToWorkerChannel(this._logger, this._workerEvents);
 
         this._logger.trace('constructor done');
     }
@@ -87,7 +87,7 @@ class Manager {
 
                         var workerChannelLogger = this._log4js.getLogger(`workerChannel-${i}`);
 
-                        var workerChannel = new ManagerWorkerChannel(
+                        var workerChannel = new ManagerToWorkerChannel(
                             workerChannelLogger,
                             this._workerEvents,
                             this._workers[i]
@@ -110,8 +110,6 @@ class Manager {
                 .catch((error) => {
                     reject(error);
                 });
-
-
 
         });
 
@@ -182,14 +180,12 @@ class Manager {
         this._workerChannel.onFatal((error, worker) => {
             this._logger.trace('workerChannel:onFatal', error, worker.id);
             error.workerId = worker.id;
-            // this._logger.fatal(error);
             this._events.emit('fatal', error);
         });
 
         this._workerChannel.onError((error, worker) => {
             this._logger.trace('workerChannel:noError', error, worker.id);
             error.workerId = worker.id;
-            // this._logger.error(error);
             this._events.emit('error', error);
         });
 

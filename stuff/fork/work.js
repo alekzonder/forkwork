@@ -3,7 +3,9 @@ var logger = log4js.getLogger('worker');
 
 log4js.configure({
     appenders: [
-        {type: 'console'}
+        {
+            type: 'console'
+        }
     ],
     levels: {
         '[all]': 'INFO'
@@ -40,17 +42,17 @@ worker.up()
         //
         // });
 
-        // worker.onShutdown((done) => {
-        //     console.log('stuff');
-        //     done();
-        // });
+        worker.onShutdown((done) => {
+            console.log('stuff');
+            done();
+        });
 
         setTimeout(() => {
             // process.exit(1);
             worker.online();
         }, 500);
 
-        worker.online();
+        // worker.online();
     })
     .catch((error) => {
         logger.fatal(error);

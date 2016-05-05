@@ -5,7 +5,7 @@ var EventEmitter = require('events').EventEmitter;
 
 var _ = require('lodash');
 
-var ForkChannel = require('./channels/WorkerFork');
+var ForkChannel = require('./channels/WorkerToFork');
 
 /**
  * Abstraction for child_process.fork
@@ -50,7 +50,7 @@ class ManagerWorker {
     /**
      * startup fork
      *
-     * @param  {WorkerForkChannel} workerChannel
+     * @param  {WorkerToForkChannel} workerChannel
      * @return {Promise}
      */
     up(workerChannel) {
