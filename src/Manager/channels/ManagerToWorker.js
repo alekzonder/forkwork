@@ -15,14 +15,12 @@ class ManagerToWorkerChannel {
      */
     constructor(logger, events, worker) {
         this._logger = logger;
-
         this._worker = null;
+        this._events = events;
 
         if (worker) {
             this._worker = worker;
         }
-
-        this._events = events;
     }
 
     /**
@@ -97,6 +95,7 @@ class ManagerToWorkerChannel {
      * @param  {ManagerWorker} worker
      */
     online(worker) {
+        this._logger.trace(`online ${worker.id}`);
         this._events.emit('online', (this._worker) ? this._worker : worker);
     }
 

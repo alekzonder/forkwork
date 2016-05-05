@@ -2,16 +2,9 @@ var Manager = require(__dirname + '/../../src/Manager');
 
 var log4js = require('log4js');
 
-var config = {
-    appenders: [
-        {
-            type: 'console'
-        }
-    ],
-    levels: {
-        '[all]': 'TRACE'
-    }
-};
+if (process.env.l) {
+    log4js.setGlobalLogLevel(process.env.l);
+}
 
 process.on('unhandledRejection', (error) => {
     logger.fatal(error);
@@ -48,8 +41,6 @@ process.on('unhandledRejection', (error) => {
 // };
 
 log4js.configure(config);
-
-log4js.getLogger('test').trace('trace');
 
 var logger = log4js.getLogger('main');
 
@@ -106,7 +97,7 @@ manager.up()
                     process.exit(1);
                 });
 
-        }, 3000);
+        }, 1000);
 
     })
     .catch((error) => {

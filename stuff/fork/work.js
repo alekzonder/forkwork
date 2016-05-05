@@ -47,12 +47,12 @@ worker.up()
             done();
         });
 
-        setTimeout(() => {
-            // process.exit(1);
-            worker.online();
-        }, 500);
+        // setTimeout(() => {
+        //     // process.exit(1);
+        //     worker.online();
+        // }, 500);
 
-        // worker.online();
+        worker.online();
     })
     .catch((error) => {
         logger.fatal(error);

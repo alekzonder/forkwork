@@ -12,6 +12,9 @@ class LoggernestoWrapper {
      * @param  {String} category
      */
     constructor(log4js, category) {
+        // TODO check log4js
+
+        this.iAmLoggernesto = true;
         this._category = 'default';
         this._log4js = log4js;
 
@@ -30,6 +33,13 @@ class LoggernestoWrapper {
      */
     getLogger(category) {
         return new LoggernestoWrapper(this._log4js, `${this._category}.${category}`);
+    }
+
+    /**
+     * set logLevel
+     */
+    setLevel() {
+        this._logger.setLevel.apply(this._logger, arguments);
     }
 
     /**

@@ -31,6 +31,8 @@ class WorkerToForkChannel {
 
         this._fork.on('message', (data) => {
 
+            this._logger.trace('got message', data);
+
             if (!data.type || messageTypes.indexOf(data.type) == -1) {
                 var error = new Error('unknown message from fork');
                 error.data = data;
@@ -132,16 +134,21 @@ class WorkerToForkChannel {
     shutdown() {
 
         return new Promise((resolve, reject) => {
-            this._logger.trace(`send 'shutdown' to worker fork ${this._id}`);
-            this._send('shutdown');
+            this._logger.trace(`shutdown. send to worker fork ${this._id}, wait for close`);
+
 
             this.onClose((code) => {
+                this.close();
+                this._logger.trace(`shutdown. got close with code = ${code}`);
+
                 if (code == 0) {
                     resolve(true);
                 } else {
                     reject(new Error(`fork shutdown failed. code = ${code}`));
                 }
             });
+
+            this._send('shutdown');
         });
 
     }

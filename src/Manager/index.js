@@ -3,13 +3,15 @@
 var path = require('path');
 var EventEmitter = require('events').EventEmitter;
 
-var log4js = require('log4js');
 var _ = require('lodash');
 var joi = require('joi');
 
+var loggernesto = require('../loggernesto');
+
 var defaultConfig = require('./config.default');
 
-var Worker = require('./Worker');
+var Workers = require('./Workers');
+
 var ManagerToWorkerChannel = require('./channels/ManagerToWorker');
 
 /**
@@ -22,20 +24,18 @@ class Manager {
     /**
      * @constructor
      *
-     * @param  {log4js} logger
+     * @param  {logger} logger
      * @param  {Object} rawConfig
      */
-    constructor(log4js, rawConfig) {
+    constructor(logger, rawConfig) {
 
-        this._log4js = log4js;
-
-        this._logger = this._log4js.getLogger('manager');
+        this._logger = this._wrap(logger, 'manager');
 
         this._rawConfig = rawConfig;
 
         this._config = null;
 
-        this._workers = {};
+        this._workers = null;
 
         this._tasks = [];
 
@@ -43,9 +43,19 @@ class Manager {
 
         this._workerEvents = new EventEmitter();
 
+        // general worker channel for all workers
         this._workerChannel = new ManagerToWorkerChannel(this._logger, this._workerEvents);
 
         this._logger.trace('constructor done');
+    }
+
+    /**
+     * workers object getter
+     *
+     * @return {Workers}
+     */
+    get workers() {
+        return this._workers;
     }
 
     /**
@@ -61,51 +71,27 @@ class Manager {
 
             this._initListeners();
 
-            this._checkLoggerInterface()
-                .then(() => {
-                    return this._prepareConfig(this._rawConfig);
-                })
+            this._prepareConfig(this._rawConfig)
                 .then((config) => {
-
                     this._config = config;
 
-                    this._logger.debug('up workers');
+                    this._logger.debug('setup workers');
 
-                    var promises = [];
+                    this._workers = new Workers(
+                        this._logger.getLogger('workers'),
+                        this._config,
+                        this._workerEvents
+                    );
 
-                    for (var i = 0; i < this._config.forkCount; i++) {
-
-                        var workerConfig = _.cloneDeep(this._config.worker);
-
-                        workerConfig.id = i;
-
-                        this._logger.debug(`starting worker ${i}`, workerConfig);
-
-                        var workerLogger = this._log4js.getLogger(`manager-worker-${i}`);
-
-                        this._workers[i] = new Worker(workerLogger, workerConfig);
-
-                        var workerChannelLogger = this._log4js.getLogger(`workerChannel-${i}`);
-
-                        var workerChannel = new ManagerToWorkerChannel(
-                            workerChannelLogger,
-                            this._workerEvents,
-                            this._workers[i]
-                        );
-
-                        promises.push(this._workers[i].up(workerChannel));
-
-                    }
-
-                    Promise.all(promises)
-                        .then((data) => {
-                            this._logger.trace('workers up result', data);
-                            resolve(data);
-                        })
-                        .catch((error) => {
-                            reject(error);
-                        });
-
+                    return this._workers.setup();
+                })
+                .then(() => {
+                    this._logger.debug('workers setup done');
+                    return this._workers.up();
+                })
+                .then((result) => {
+                    this._logger.debug('workers up');
+                    resolve(result);
                 })
                 .catch((error) => {
                     reject(error);
@@ -124,22 +110,17 @@ class Manager {
 
         return new Promise((resolve, reject) => {
 
-            var promises = [];
-
-            for (var id in this._workers) {
-                this._logger.trace(`send 'shutdown' to worker ${id}`);
-                promises.push(this._workers[id].shutdown());
-            }
-
-            Promise.all(promises)
+            this._workers.shutdown()
                 .then(() => {
-                    resolve(true);
+                    this._logger.debug('workers stopped');
+                    resolve();
                 })
                 .catch((error) => {
                     reject(error);
                 });
 
         });
+
 
     }
 
@@ -207,7 +188,7 @@ class Manager {
 
         return new Promise((resolve, reject) => {
 
-            this._logger.trace('preparing config');
+            this._logger.debug('preparing config');
 
             var extendedConfig = _.defaultsDeep(rawConfig, defaultConfig);
 
@@ -252,7 +233,9 @@ class Manager {
 
         return new Promise((resolve, reject) => {
 
-            joi.validate(config, configSchema, {allowUnknown: true}, (err, validConfig) => {
+            joi.validate(config, configSchema, {
+                allowUnknown: true
+            }, (err, validConfig) => {
                 if (err) {
                     return reject(err);
                 }
@@ -265,34 +248,14 @@ class Manager {
     }
 
     /**
-     * check logger interface methods
+     * wrap logger
      *
-     * @private
-     * @return {Promise}
+     * @param  {logger} logger
+     * @param  {String} category
+     * @return {LoggernestoWrapper}
      */
-    _checkLoggerInterface() {
-
-        return new Promise((resolve, reject) => {
-
-            this._logger.trace('checking logger interface');
-
-            var methods = ['trace', 'debug', 'info', 'error', 'fatal'];
-
-            _.each(methods, (method) => {
-
-                if (
-                    typeof this._logger[method] === 'undefined' ||
-                    typeof this._logger[method] !== 'function'
-                ) {
-                    reject(new Error(`logger must have method ${method}`));
-                    return false;
-                }
-
-            });
-
-            resolve();
-        });
-
+    _wrap(logger, category) {
+        return loggernesto(logger, category);
     }
 }
 

@@ -36,6 +36,8 @@ class ManagerWorker {
         this._events = new EventEmitter();
 
         this._forkChannel = null;
+
+        this._shutdowning = false;
     }
 
     /**
@@ -70,13 +72,20 @@ class ManagerWorker {
                 silent: false
             });
 
-            this._forkChannel = new ForkChannel(this._logger, this._fork);
+            this._forkChannel = new ForkChannel(this._logger.getLogger('fork-channel'), this._fork);
 
             this._forkChannel.id = this._config.id;
 
             var that = this;
 
             this._forkChannel.onClose((code) => {
+
+                if (this._shutdowning) {
+                    return;
+                }
+
+                this._logger.trace(`fork close with code = ${code}`);
+
                 this._forkChannel.close();
 
                 if (code != 0) {
@@ -122,11 +131,15 @@ class ManagerWorker {
         return new Promise((resolve, reject) => {
 
             if (this._forkChannel.isClosed()) {
+                this._logger.trace('shutdown. fork channel already closed');
                 return resolve();
             }
 
+            this._shutdowning = true;
+
             this._forkChannel.shutdown()
                 .then(() => {
+                    this._logger.trace('shutdown. fork closed');
                     resolve();
                 })
                 .catch((error) => {
