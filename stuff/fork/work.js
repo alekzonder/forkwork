@@ -43,7 +43,7 @@ worker.up()
         // });
 
         worker.onShutdown((done) => {
-            console.log('stuff');
+            // console.log('stuff');
             done();
         });
 

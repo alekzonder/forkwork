@@ -65,18 +65,23 @@ class ManagerWorker {
 
             this._workerChannel = workerChannel;
 
-            this._logger.setLevel(this._config.logLevel);
+            // this._logger.setLevel(this._config.logLevel);
+
+            // this._logger.trace('child.fork');
 
             this._fork = child.fork(this._config.path, {
                 cwd: this._config.cwd,
                 silent: false
             });
 
+            // this._logger.trace('create forkChannel');
             this._forkChannel = new ForkChannel(this._logger.getLogger('fork-channel'), this._fork);
 
             this._forkChannel.id = this._config.id;
 
             var that = this;
+
+            // this._logger.trace('bind fork channel events');
 
             this._forkChannel.onClose((code) => {
 
@@ -84,7 +89,7 @@ class ManagerWorker {
                     return;
                 }
 
-                this._logger.trace(`fork close with code = ${code}`);
+                // this._logger.trace(`fork close with code = ${code}`);
 
                 this._forkChannel.close();
 
@@ -157,6 +162,7 @@ class ManagerWorker {
      * @private
      */
     _init() {
+        this._logger.trace('bind fork channel events');
         this._forkChannel.init({
             id: this._config.id
         });

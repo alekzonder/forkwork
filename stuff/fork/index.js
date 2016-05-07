@@ -45,7 +45,7 @@ log4js.configure(config);
 var logger = log4js.getLogger('main');
 
 var config = {
-    forkCount: 3,
+    forkCount: 10,
     worker: {
         path: './work',
         startupTimeout: 1000
@@ -80,24 +80,24 @@ manager.onClose((code, worker) => {
 });
 
 manager.up()
-    .then((result) => {
+    .then((workersCount) => {
 
-        logger.info(`${result.length} workers online`);
+        logger.info(`${workersCount} workers online`);
 
-        setTimeout(() => {
-
-            logger.info('send "shutdown" to workers');
-
-            manager.shutdown()
-                .then(() => {
-                    logger.info('shutdown');
-                })
-                .catch((error) => {
-                    logger.error(error);
-                    process.exit(1);
-                });
-
-        }, 1000);
+        // setTimeout(() => {
+        //
+        //     logger.info('send "shutdown" to workers');
+        //
+        //     manager.shutdown()
+        //         .then(() => {
+        //             logger.info('shutdown');
+        //         })
+        //         .catch((error) => {
+        //             logger.error(error);
+        //             process.exit(1);
+        //         });
+        //
+        // }, 1000);
 
     })
     .catch((error) => {

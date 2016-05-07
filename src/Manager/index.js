@@ -69,6 +69,8 @@ class Manager {
 
             this._logger.trace('up started');
 
+            this._logger.debug(`manager pid = ${process.pid}`);
+
             this._initListeners();
 
             this._prepareConfig(this._rawConfig)
@@ -89,9 +91,9 @@ class Manager {
                     this._logger.debug('workers setup done');
                     return this._workers.up();
                 })
-                .then((result) => {
-                    this._logger.debug('workers up');
-                    resolve(result);
+                .then((workersCount) => {
+                    this._logger.debug(`${workersCount} workers up`);
+                    resolve(workersCount);
                 })
                 .catch((error) => {
                     reject(error);

@@ -27,7 +27,7 @@ class Workers {
                 var workerConfig = _.cloneDeep(this._config.worker);
                 workerConfig.id = newId;
 
-                this._logger.debug(`starting worker ${newId}`);
+                this._logger.debug(`setup worker ${newId}`);
                 this._logger.trace(workerConfig);
 
                 var workerLogger = this._logger.getLogger(`${newId}`);
@@ -52,13 +52,28 @@ class Workers {
     }
 
     up() {
-        var promises = [];
 
-        _.each(this._workers, (worker, id) => {
-            promises.push(worker.up(this._workerChannels[id]));
+        return new Promise((resolve, reject) => {
+            var promises = [];
+
+            this._logger.debug('forking workers');
+
+            _.each(this._workers, (worker, id) => {
+                this._logger.debug(`fork worker ${id}`);
+                promises.push(worker.up(this._workerChannels[id]));
+            });
+
+            Promise.all(promises)
+                .then((result) => {
+                    resolve(result.length);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+
         });
 
-        return Promise.all(promises);
+
     }
 
     shutdown() {

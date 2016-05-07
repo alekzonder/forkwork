@@ -170,6 +170,9 @@ class WorkerToForkChannel {
      * @param  {Object} data
      */
     _send(type, data) {
+
+        this._logger.trace(`send ${type} message`, data);
+
         if (this._closed) {
             this._logger.debug(`can't send message to fork, channel closed`, data);
             return;
