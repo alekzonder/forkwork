@@ -99,6 +99,50 @@ class ManagerToWorkerChannel {
         this._events.emit('online', (this._worker) ? this._worker : worker);
     }
 
+    /**
+     * emit taskStarted event
+     *
+     * @param  {Object} data
+     * @param  {ManagerWorker} worker
+     */
+    taskStarted(data, worker) {
+        this._logger.trace(`taskStarted ${worker.id}`, data);
+        this._events.emit('taskStarted', data, (this._worker) ? this._worker : worker);
+    }
+
+    /**
+     * emit taskFinished
+     *
+     * @param  {Object} data
+     * @param  {ManagerWorker} worker
+     */
+    taskFinished(data, worker) {
+        this._logger.trace(`taskFinished ${worker.id}`, data);
+        this._events.emit('taskFinished', data, (this._worker) ? this._worker : worker);
+    }
+
+    /**
+     * emit taskError
+     *
+     * @param  {Error} error
+     * @param  {ManagerWorker} worker
+     */
+    taskError(error, worker) {
+        this._logger.trace(`taskError ${worker.id}`, error);
+        this._events.emit('taskError', error, (this._worker) ? this._worker : worker);
+    }
+
+    /**
+     * emit taskFatal
+     *
+     * @param  {Error} error
+     * @param  {ManagerWorker} worker
+     */
+    taskFatal(error, worker) {
+        this._logger.trace(`taskFatal ${worker.id}`, error);
+        this._events.emit('taskFatal', error, (this._worker) ? this._worker : worker);
+    }
+
 }
 
 module.exports = ManagerToWorkerChannel;

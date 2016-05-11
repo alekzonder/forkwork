@@ -5,8 +5,19 @@ var _ = require('lodash');
 var Worker = require('./Worker');
 var ManagerToWorkerChannel = require('./channels/ManagerToWorker');
 
+/**
+ * worker manager
+ *
+ * @class
+ */
 class Workers {
 
+    /**
+     * @constructor
+     * @param  {LoggernestoWrapper} logger
+     * @param  {Object} config
+     * @param  {EventEmitter} workerEvents
+     */
     constructor(logger, config, workerEvents) {
         this._logger = logger;
         this._config = config;
@@ -16,6 +27,11 @@ class Workers {
         this._i = 0;
     }
 
+    /**
+     * setup worker objects before fork
+     *
+     * @return {Promise}
+     */
     setup() {
 
         return new Promise((resolve, reject) => {
@@ -51,6 +67,11 @@ class Workers {
 
     }
 
+    /**
+     * fork worker processes
+     *
+     * @return {Promise}
+     */
     up() {
 
         return new Promise((resolve, reject) => {
@@ -73,9 +94,13 @@ class Workers {
 
         });
 
-
     }
 
+    /**
+     * shutdown workers
+     *
+     * @return {Promise}
+     */
     shutdown() {
 
         return new Promise((resolve, reject) => {
@@ -96,6 +121,94 @@ class Workers {
                 });
         });
 
+    }
+
+    /**
+     * get worker by id
+     *
+     * @param  {Number} id
+     * @return {ManagerWorker}
+     */
+    get(id) {
+        if (!this._workers[id]) {
+            return null;
+        }
+
+        return this._workers[id];
+    }
+
+    /**
+     * get worker with status === FREE
+     *
+     * @return {Null|ManagerWorker}
+     */
+    getFreeWorker() {
+        var free;
+
+        for (var i in this._workers) {
+
+            var worker = this._workers[i];
+
+            if (worker.isFree()) {
+                free = worker;
+                break;
+            }
+
+        }
+
+        return free;
+    }
+
+    /**
+     * get all workers statistiscs
+     *
+     * @return {Object}
+     */
+    getWorkersStat() {
+        var stat = {};
+
+        for (var i in this._workers) {
+            var worker = this._workers[i];
+            stat[i] = worker.getStat();
+        }
+
+        return stat;
+    }
+
+    /**
+     * onTaskStarted callback
+     *
+     * @param  {Function} cb
+     */
+    onTaskStarted(cb) {
+        this._workerEvents.on('taskStarted', cb);
+    }
+
+    /**
+     * onTaskFinished callback
+     *
+     * @param  {Function} cb
+     */
+    onTaskFinished(cb) {
+        this._workerEvents.on('taskFinished', cb);
+    }
+
+    /**
+     * onTaskError callback
+     *
+     * @param  {Function} cb
+     */
+    onTaskError(cb) {
+        this._workerEvents.on('taskError', cb);
+    }
+
+    /**
+     * onTaskFatal callback
+     *
+     * @param  {Function} cb
+     */
+    onTaskFatal(cb) {
+        this._workerEvents.on('taskFatal', cb);
     }
 }
 

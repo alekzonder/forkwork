@@ -26,7 +26,11 @@ class WorkerToForkChannel {
         this._closed = false;
 
         var messageTypes = [
-            'online'
+            'online',
+            'taskStarted',
+            'taskFinished',
+            'taskError',
+            'taskFatal'
         ];
 
         this._fork.on('message', (data) => {
@@ -87,6 +91,50 @@ class WorkerToForkChannel {
      */
     onClose(cb) {
         this._fork.on('close', cb);
+    }
+
+    /**
+     * onTaskStarted callback
+     *
+     * @param  {Function} cb
+     */
+    onTaskStarted(cb) {
+        this._events.on('taskStarted', (taskId) => {
+            cb({workerId: this._id, taskId: taskId});
+        });
+    }
+
+    /**
+     * onTaskFinished callback
+     *
+     * @param  {Function} cb
+     */
+    onTaskFinished(cb) {
+        this._events.on('taskFinished', (taskId) => {
+            cb({workerId: this._id, taskId: taskId});
+        });
+    }
+
+    /**
+     * onTaskError callback
+     *
+     * @param  {Function} cb
+     */
+    onTaskError(cb) {
+        this._events.on('taskError', (error) => {
+            cb(error);
+        });
+    }
+
+    /**
+     * onTaskFatal callback
+     *
+     * @param  {Function} cb
+     */
+    onTaskFatal(cb) {
+        this._events.on('taskFatal', (error) => {
+            cb(error);
+        });
     }
 
     /**
@@ -154,6 +202,15 @@ class WorkerToForkChannel {
     }
 
     /**
+     * send task to fork
+     *
+     * @param  {task} task
+     */
+    sendTask(task) {
+        this._send('task', task);
+    }
+
+    /**
      * is fork channel closed
      *
      * @return {Boolean}
@@ -171,7 +228,7 @@ class WorkerToForkChannel {
      */
     _send(type, data) {
 
-        this._logger.trace(`send ${type} message`, data);
+        this._logger.trace(`send message "${type}"`, data);
 
         if (this._closed) {
             this._logger.debug(`can't send message to fork, channel closed`, data);

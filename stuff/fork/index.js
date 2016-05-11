@@ -45,7 +45,7 @@ log4js.configure(config);
 var logger = log4js.getLogger('main');
 
 var config = {
-    forkCount: 10,
+    forkCount: 5,
     worker: {
         path: './work',
         startupTimeout: 1000
@@ -84,20 +84,60 @@ manager.up()
 
         logger.info(`${workersCount} workers online`);
 
-        // setTimeout(() => {
-        //
-        //     logger.info('send "shutdown" to workers');
-        //
-        //     manager.shutdown()
-        //         .then(() => {
-        //             logger.info('shutdown');
-        //         })
-        //         .catch((error) => {
-        //             logger.error(error);
-        //             process.exit(1);
-        //         });
-        //
-        // }, 1000);
+        var start = (new Date()).getTime();
+
+        var started = 0;
+        var done = 0;
+
+        manager.tasks.onTaskStarted((id) => {
+            started++;
+        });
+
+        manager.tasks.onTaskFinished((id) => {
+            logger.info(`task ${id} done`);
+            done++;
+
+            if (started && started == done && manager.tasks.getQueueSize() === 0) {
+
+                var doneDate = (new Date).getTime();
+
+                console.log(doneDate - start);
+
+                console.log(manager.workers.getWorkersStat());
+
+                manager.shutdown()
+                    .then(() => {
+                        logger.info('success shutdown');
+                    })
+                    .catch((error) => {
+                        logger.fatal(error);
+                        process.exit(1);
+                    });
+            }
+        });
+
+        manager.tasks.onTaskError((error) => {
+
+            logger.error(error);
+
+            manager.shutdown()
+                .then(() => {
+                    logger.fatal('shutdown on error', error.message);
+                    process.exit(1);
+                })
+                .catch((error) => {
+                    logger.fatal(error);
+                    process.exit(1);
+                });
+        });
+
+        manager.tasks.onTaskFatal((error) => {
+            logger.fatal(error);
+        });
+
+        for (var i = 0; i < 10; i++) {
+            var task = manager.tasks.add({type: 'echo', text: i});
+        }
 
     })
     .catch((error) => {

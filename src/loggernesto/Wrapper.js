@@ -36,6 +36,16 @@ class LoggernestoWrapper {
     }
 
     /**
+     * log level
+     *
+     * @return {String}
+     */
+    get level() {
+        // TODO
+        return this._logger.level.levelStr;
+    }
+
+    /**
      * set logLevel
      */
     setLevel() {

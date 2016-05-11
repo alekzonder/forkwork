@@ -1,7 +1,10 @@
 {
     "forkCount": 3,
     "worker": {
-        "startupTimeout": 10000
+        "startupTimeout": 10000,
+        "options": {
+            "silent": false
+        }
     },
     "cwd": null
 }

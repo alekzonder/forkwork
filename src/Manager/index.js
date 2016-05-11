@@ -11,6 +11,9 @@ var loggernesto = require('../loggernesto');
 var defaultConfig = require('./config.default');
 
 var Workers = require('./Workers');
+var Tasks = require('./Tasks');
+
+var Director = require('./Director');
 
 var ManagerToWorkerChannel = require('./channels/ManagerToWorker');
 
@@ -37,7 +40,9 @@ class Manager {
 
         this._workers = null;
 
-        this._tasks = [];
+        this._tasks = null;
+
+        this._director = null;
 
         this._events = new EventEmitter();
 
@@ -56,6 +61,15 @@ class Manager {
      */
     get workers() {
         return this._workers;
+    }
+
+    /**
+     * tasks object getter
+     *
+     * @return {Tasks}
+     */
+    get tasks() {
+        return this._tasks;
     }
 
     /**
@@ -85,6 +99,21 @@ class Manager {
                         this._workerEvents
                     );
 
+                    this._tasks = new Tasks(
+                        this._logger.getLogger('tasks'),
+                        this._config
+                    );
+
+                    this._director = new Director(
+                        this._logger.getLogger('director'),
+                        this._workers,
+                        this._tasks,
+                        this._events
+                    );
+
+                    return this._director.init();
+                })
+                .then(() => {
                     return this._workers.setup();
                 })
                 .then(() => {
@@ -127,12 +156,33 @@ class Manager {
     }
 
     /**
+     * shutdown workers and exit with code
+     *
+     * @param  {Number} code
+     */
+    exit(code) {
+        if (typeof code == 'undefined') {
+            code  = 0;
+        }
+
+        this.shutdown()
+            .then(() => {
+                process.exit(code);
+            })
+            .catch((error) => {
+                this._logger.error(error);
+                process.exit(code);
+            });
+    }
+
+    /**
      * on Fatal error callback
      *
      * @param  {Function} cb
      */
     onFatal(cb) {
         this._events.on('fatal', cb);
+        return this;
     }
 
     /**
@@ -142,6 +192,7 @@ class Manager {
      */
     onError(cb) {
         this._events.on('error', cb);
+        return this;
     }
 
     /**
@@ -151,6 +202,7 @@ class Manager {
      */
     onClose(cb) {
         this._events.on('close', cb);
+        return this;
     }
 
     /**
@@ -196,11 +248,14 @@ class Manager {
 
             this._checkConfig(extendedConfig)
                 .then((config) => {
-                    if (!config.worker.cwd) {
-                        config.worker.cwd = config.cwd;
+
+                    if (!config.worker.args) {
+                        config.worker.args = [];
                     }
 
-                    config.worker.path = path.resolve(`${config.worker.cwd}/${config.worker.path}`);
+                    if (!config.worker.options) {
+                        config.worker.options = {};
+                    }
 
                     config.worker.logLevel = config.logLevel;
 

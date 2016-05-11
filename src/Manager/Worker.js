@@ -7,6 +7,9 @@ var _ = require('lodash');
 
 var ForkChannel = require('./channels/WorkerToFork');
 
+var Statuses = require('./WorkerStatuses');
+
+
 /**
  * Abstraction for child_process.fork
  *
@@ -38,6 +41,19 @@ class ManagerWorker {
         this._forkChannel = null;
 
         this._shutdowning = false;
+
+        this.statuses = Statuses;
+
+        this._status = Statuses.FREE;
+
+        this._task = null;
+
+        this._stat = {
+            started: 0,
+            finished: 0,
+            error: 0,
+            fatal: 0
+        };
     }
 
     /**
@@ -47,6 +63,15 @@ class ManagerWorker {
      */
     get id() {
         return this._config.id;
+    }
+
+    /**
+     * check worker status == FREE
+     *
+     * @return {Boolean}
+     */
+    isFree() {
+        return (this._status === Statuses.FREE) ? true : false;
     }
 
     /**
@@ -65,31 +90,20 @@ class ManagerWorker {
 
             this._workerChannel = workerChannel;
 
-            // this._logger.setLevel(this._config.logLevel);
 
-            // this._logger.trace('child.fork');
+            this._fork = child.fork(this._config.path, this._config.args, this._config.options);
 
-            this._fork = child.fork(this._config.path, {
-                cwd: this._config.cwd,
-                silent: false
-            });
-
-            // this._logger.trace('create forkChannel');
             this._forkChannel = new ForkChannel(this._logger.getLogger('fork-channel'), this._fork);
 
             this._forkChannel.id = this._config.id;
 
             var that = this;
 
-            // this._logger.trace('bind fork channel events');
-
             this._forkChannel.onClose((code) => {
 
                 if (this._shutdowning) {
                     return;
                 }
-
-                // this._logger.trace(`fork close with code = ${code}`);
 
                 this._forkChannel.close();
 
@@ -153,7 +167,30 @@ class ManagerWorker {
 
         });
 
+    }
 
+    /**
+     * send task to fork
+     *
+     * @param  {Task} task
+     */
+    sendTask(task) {
+        this._task = task;
+
+        var raw = task.serialize();
+
+        this._status = Statuses.BUSY;
+
+        this._forkChannel.sendTask(raw);
+    }
+
+    /**
+     * get worker statistics
+     *
+     * @return {Object}
+     */
+    getStat() {
+        return this._stat;
     }
 
     /**
@@ -163,9 +200,52 @@ class ManagerWorker {
      */
     _init() {
         this._logger.trace('bind fork channel events');
+
         this._forkChannel.init({
-            id: this._config.id
+            id: this._config.id,
+            logLevel: this._logger.level
         });
+
+        this._forkChannel.onTaskStarted((data) => {
+            this._stat.started++;
+            this._workerChannel.taskStarted(data, this);
+        });
+
+        this._forkChannel.onTaskFinished((data) => {
+            this._stat.finished++;
+            this._workerChannel.taskFinished(data, this);
+            this._status = Statuses.FREE;
+        });
+
+        this._forkChannel.onTaskError((error) => {
+            this._stat.error++;
+            error.taskId = this._task.id;
+            error.workerId = this.id;
+            this._workerChannel.taskError(this._makeError(error), this);
+        });
+
+        this._forkChannel.onTaskFatal((error) => {
+            this._stat.fatal++;
+            error.taskId = this._task.id;
+            error.workerId = this.id;
+            this._workerChannel.taskFatal(this._makeError(error), this);
+        });
+    }
+
+    /**
+     * make error from object
+     *
+     * @param  {Object} data
+     * @return {Error}
+     */
+    _makeError(data) {
+        var error = new Error(data.message);
+        error.code = data.code;
+        error.stack = data.stack;
+        error.taskId = data.taskId;
+        error.workerId = data.workerId;
+
+        return error;
     }
 
 }

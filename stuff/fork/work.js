@@ -1,26 +1,13 @@
 var log4js = require('log4js');
 var logger = log4js.getLogger('worker');
 
-log4js.configure({
-    appenders: [
-        {
-            type: 'console'
-        }
-    ],
-    levels: {
-        '[all]': 'INFO'
-    }
-});
-
-var EventEmitter = require('events').EventEmitter;
+log4js.setGlobalLogLevel('INFO');
 
 var Worker = require(__dirname + '/../../src/Worker');
 
-var eventEmitter = new EventEmitter();
-
 var config = {};
 
-var worker = new Worker(logger, config, eventEmitter);
+var worker = new Worker(logger, config);
 
 process.on('unhandledRejection', (error) => {
     logger.fatal(error);
@@ -32,25 +19,23 @@ worker
     })
     .postInit((resolve, reject) => {
         worker.logger.category = 'worker-' + worker.config.id;
+        log4js.setGlobalLogLevel(worker.config.logLevel);
         resolve();
     });
 
 worker.up()
     .then(() => {
 
-        // worker.onTask((task) => {
-        //
-        // });
 
-        worker.onShutdown((done) => {
-            // console.log('stuff');
-            done();
+        worker.onTask((task) => {
+            setTimeout(() => {
+                task.done();
+            }, 500);
         });
 
-        // setTimeout(() => {
-        //     // process.exit(1);
-        //     worker.online();
-        // }, 500);
+        worker.onShutdown((done) => {
+            done();
+        });
 
         worker.online();
     })
