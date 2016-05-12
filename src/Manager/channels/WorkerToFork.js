@@ -30,7 +30,9 @@ class WorkerToForkChannel {
             'taskStarted',
             'taskFinished',
             'taskError',
-            'taskFatal'
+            'taskFatal',
+            'error',
+            'fatal'
         ];
 
         this._fork.on('message', (data) => {
@@ -38,7 +40,7 @@ class WorkerToForkChannel {
             this._logger.trace('got message', data);
 
             if (!data.type || messageTypes.indexOf(data.type) == -1) {
-                var error = new Error('unknown message from fork');
+                var error = new Error('unknown message from fork ' + data.type);
                 error.data = data;
 
                 this._events.emit('fatal', error);

@@ -116,10 +116,16 @@ class ManagerWorker {
             });
 
             this._forkChannel.onFatal((error) => {
+                if (!error) {
+                    error = new Error('unknown error from fork');
+                }
                 this._workerChannel.fatal(error);
             });
 
             this._forkChannel.onError((error) => {
+                if (!error) {
+                    error = new Error('unknown error from fork');
+                }
                 this._workerChannel.error(error);
             });
 
@@ -239,6 +245,12 @@ class ManagerWorker {
      * @return {Error}
      */
     _makeError(data) {
+        if (!data) {
+            data = {
+                message: 'unknown error'
+            };
+        }
+
         var error = new Error(data.message);
         error.code = data.code;
         error.stack = data.stack;

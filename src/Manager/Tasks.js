@@ -10,7 +10,6 @@ class Tasks {
         this._logger = logger;
         this._config = config;
 
-
         this._tasks = {};
 
         this._queue = [];
@@ -79,6 +78,10 @@ class Tasks {
 
     getQueueSize() {
         return this._queue.length;
+    }
+
+    isQueueEmpty() {
+        return this.getQueueSize() == 0;
     }
 
     get(id) {

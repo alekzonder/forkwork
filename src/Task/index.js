@@ -113,6 +113,21 @@ class Task {
     }
 
     /**
+     * get execution time
+     *
+     * @return {Number}
+     */
+    getExecTime() {
+        if (!this._task.startDate || !this._task.finishDate) {
+            return null;
+        }
+
+        var time = (this._task.finishDate - this._task.startDate) / 1000;
+
+        return time;
+    }
+
+    /**
      * @private
      * @return {Number}
      */

@@ -213,19 +213,28 @@ class Manager {
     _initListeners() {
 
         this._workerChannel.onFatal((error, worker) => {
-            this._logger.trace('workerChannel:onFatal', error, worker.id);
-            error.workerId = worker.id;
+            var workerId = (worker && worker.id) ? worker.id : null;
+            this._logger.trace('workerChannel:onFatal', error, workerId);
+            error.workerId = workerId;
             this._events.emit('fatal', error);
         });
 
         this._workerChannel.onError((error, worker) => {
-            this._logger.trace('workerChannel:noError', error, worker.id);
-            error.workerId = worker.id;
+            var workerId = (worker && worker.id) ? worker.id : null;
+            this._logger.trace('workerChannel:onError', error, workerId);
+            error.workerId = workerId;
             this._events.emit('error', error);
         });
 
         this._workerChannel.onClose((code, worker) => {
-            this._logger.trace('workerChannel:onClose', code, worker.id);
+            var workerId = (worker && worker.id) ? worker.id : null;
+
+            this._logger.trace(
+                'workerChannel:onClose',
+                code,
+                workerId
+            );
+
             this._events.emit('close', code, worker);
         });
 
