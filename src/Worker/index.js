@@ -19,18 +19,13 @@ class ForkWorker {
      * @constructor
      * @param  {LoggernestoWrapper} logger
      * @param  {Object} config
-     * @param  {EventEmitter} events
      */
-    constructor(logger, config, events) {
+    constructor(logger, config) {
 
         this._logger = logger;
         this._config = config;
 
-        if (events) {
-            this._events = events;
-        } else {
-            this._events = new EventEmitter();
-        }
+        this._events = new EventEmitter();
 
         this._workerChannel = new WorkerChannel(logger);
 
@@ -40,6 +35,17 @@ class ForkWorker {
         this._shutdownCallback = null;
 
         this._task = null;
+
+        this._i = null;
+    }
+
+    /**
+     * id getter
+     *
+     * @return {String}
+     */
+    get id() {
+        return this._config.id;
     }
 
     /**
@@ -191,7 +197,11 @@ class ForkWorker {
             });
 
             this._events.on('taskFinished', () => {
+                this._logger.trace('Worker._events.on(taskFinished)', this._task.id);
+                this._i = this._task.id;
                 this._workerChannel.taskFinished(this._task.id);
+                this._task = null;
+
             });
 
             this._events.on('taskError', (error) => {

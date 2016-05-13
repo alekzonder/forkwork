@@ -92,6 +92,7 @@ class WorkerChannel {
      * @param  {Number} id
      */
     taskFinished(id) {
+        this._logger.trace('WorkerChannel.taskFinished', id);
         this._send('taskFinished', id);
     }
 

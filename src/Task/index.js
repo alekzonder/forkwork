@@ -28,7 +28,7 @@ class Task {
     /**
      * id getter
      *
-     * @return {Number}
+     * @return {String}
      */
     get id() {
         return this._task.id;

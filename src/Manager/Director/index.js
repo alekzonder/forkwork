@@ -1,5 +1,7 @@
 'use strict';
 
+var _ = require('lodash');
+
 /**
  * Task Director
  * @class
@@ -44,10 +46,6 @@ class Director {
 
         this._tasks.onTaskAdded((task) => {
 
-            // проверить есть ли свободный worker
-            // если есть отправляем ему таск
-            // если нет он отправиться когда завершится задача
-
             var worker = this._workers.getFreeWorker();
 
             if (!worker) {
@@ -64,17 +62,21 @@ class Director {
 
             this._logger.trace(`got free worker ${worker.id} for new task`);
 
-            this._logger.debug(`send next task ${task.id} to worker ${worker.id}`);
+            this._logger.debug(`TaskAdded. send next task ${task.id} to worker ${worker.id}`);
 
-            worker.sendTask(task);
+            if (!worker.sendTask(task)) {
+                this._tasks.returnToQueue(task.id);
+            }
         });
+
 
         this._workers.onTaskStarted((data) => {
             this._logger.trace(`task ${data.taskId} started with worker ${data.workerId}`);
             this._tasks.markStarted(data.taskId);
         });
 
-        this._workers.onTaskFinished((data) => {
+
+        this._workers.onTaskFinished((data, worker) => {
             this._logger.debug(`task ${data.taskId} finished with worker ${data.workerId}`);
 
             this._tasks.markFinished(data.taskId);
@@ -93,15 +95,28 @@ class Director {
                 return;
             }
 
+            if (worker.isBusy()) {
+                worker = this._workers.getFreeWorker();
+
+                if (!worker) {
+                    this._logger.error(new Error('no free worker on TaskFinished'));
+                    return;
+                }
+            }
+
             this._logger.debug(`send next task ${task.id} to worker ${worker.id}`);
 
-            worker.sendTask(task);
+            if (!worker.sendTask(task)) {
+                this._tasks.returnToQueue(task.id);
+            }
         });
+
 
         this._workers.onTaskError((error) => {
             this._logger.trace(error);
             this._tasks.markErrored(error.taskId, error);
         });
+
 
         this._workers.onTaskFatal((error) => {
             this._logger.trace(error);

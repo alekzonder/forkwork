@@ -51,15 +51,15 @@ class ManagerWorker {
         this._stat = {
             started: 0,
             finished: 0,
-            error: 0,
-            fatal: 0
+            errored: 0,
+            fataled: 0
         };
     }
 
     /**
      * worker id
      *
-     * @return {String}
+     * @return {Number}
      */
     get id() {
         return this._config.id;
@@ -71,7 +71,11 @@ class ManagerWorker {
      * @return {Boolean}
      */
     isFree() {
-        return (this._status === Statuses.FREE) ? true : false;
+        return this._status == Statuses.FREE;
+    }
+
+    isBusy() {
+        return this._status == Statuses.BUSY;
     }
 
     /**
@@ -181,13 +185,19 @@ class ManagerWorker {
      * @param  {Task} task
      */
     sendTask(task) {
+        if (!this.isFree()) {
+            return false;
+        }
+
+        this._status = Statuses.BUSY;
+
         this._task = task;
 
         var raw = task.serialize();
 
-        this._status = Statuses.BUSY;
-
         this._forkChannel.sendTask(raw);
+
+        return true;
     }
 
     /**
@@ -219,14 +229,17 @@ class ManagerWorker {
 
         this._forkChannel.onTaskFinished((data) => {
             this._stat.finished++;
-            this._workerChannel.taskFinished(data, this);
+
             this._status = Statuses.FREE;
+
+            this._workerChannel.taskFinished(data, this);
         });
 
         this._forkChannel.onTaskError((error) => {
             this._stat.error++;
             error.taskId = this._task.id;
             error.workerId = this.id;
+            this._status = Statuses.FREE;
             this._workerChannel.taskError(this._makeError(error), this);
         });
 
@@ -234,6 +247,7 @@ class ManagerWorker {
             this._stat.fatal++;
             error.taskId = this._task.id;
             error.workerId = this.id;
+            this._status = Statuses.FREE;
             this._workerChannel.taskFatal(this._makeError(error), this);
         });
     }

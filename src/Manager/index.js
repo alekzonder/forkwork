@@ -122,6 +122,7 @@ class Manager {
                 })
                 .then((workersCount) => {
                     this._logger.debug(`${workersCount} workers up`);
+                    // this._director.checkTasks();
                     resolve(workersCount);
                 })
                 .catch((error) => {

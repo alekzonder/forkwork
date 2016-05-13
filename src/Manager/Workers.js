@@ -28,6 +28,15 @@ class Workers {
     }
 
     /**
+     * workers getter
+     *
+     * @return {Object}
+     */
+    get workers() {
+        return this._workers;
+    }
+
+    /**
      * setup worker objects before fork
      *
      * @return {Promise}
