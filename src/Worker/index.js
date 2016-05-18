@@ -17,7 +17,7 @@ class ForkWorker {
 
     /**
      * @constructor
-     * @param  {LoggernestoWrapper} logger
+     * @param  {log4js-nested} logger
      * @param  {Object} config
      */
     constructor(logger, config) {
@@ -51,7 +51,7 @@ class ForkWorker {
     /**
      * logger getter
      *
-     * @return {LoggernestoWrapper}
+     * @return {log4js-nested}
      */
     get logger() {
         return this._logger;

@@ -10,7 +10,7 @@ class Director {
 
     /**
      * @constructor
-     * @param  {LoggernestoWrapper} logger
+     * @param  {log4js-nested} logger
      * @param  {Workers} workers
      * @param  {Tasks} tasks
      * @param  {EventEmitter} globalEvents

@@ -6,7 +6,7 @@ var EventEmitter = require('events').EventEmitter;
 var _ = require('lodash');
 var joi = require('joi');
 
-var loggernesto = require('../loggernesto');
+var log4jsNestedWrap = require('log4js-nested/wrap');
 
 var defaultConfig = require('./config.default');
 
@@ -32,7 +32,7 @@ class Manager {
      */
     constructor(logger, rawConfig) {
 
-        this._logger = this._wrap(logger, 'manager');
+        this._logger = this._wrap(logger, 'forkwork');
 
         this._rawConfig = rawConfig;
 
@@ -319,10 +319,10 @@ class Manager {
      *
      * @param  {logger} logger
      * @param  {String} category
-     * @return {LoggernestoWrapper}
+     * @return {log4js-nested}
      */
     _wrap(logger, category) {
-        return loggernesto(logger, category);
+        return log4jsNestedWrap(logger, category);
     }
 }
 

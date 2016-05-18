@@ -14,7 +14,7 @@ class Workers {
 
     /**
      * @constructor
-     * @param  {LoggernestoWrapper} logger
+     * @param  {log4js-nested} logger
      * @param  {Object} config
      * @param  {EventEmitter} workerEvents
      */

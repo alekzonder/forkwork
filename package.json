@@ -1,6 +1,6 @@
 {
   "name": "forkwork",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "description": "task manager using forks",
   "main": "index.js",
   "scripts": {
@@ -19,7 +19,8 @@
   "dependencies": {
     "joi": "^8.0.5",
     "lodash": "^4.11.1",
-    "log4js": "^0.6.35"
+    "log4js": "^0.6.35",
+    "log4js-nested": "^0.1.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
