@@ -90,10 +90,14 @@ class WorkerChannel {
      * send taskFinished event
      *
      * @param  {Number} id
+     * @param {Object} result
      */
-    taskFinished(id) {
-        this._logger.trace('WorkerChannel.taskFinished', id);
-        this._send('taskFinished', id);
+    taskFinished(data) {
+        this._logger.trace('WorkerChannel.taskFinished', data);
+        this._send('taskFinished', {
+            id: data.id,
+            result: data.result
+        });
     }
 
     /**

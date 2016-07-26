@@ -77,7 +77,9 @@ class Director {
 
 
         this._workers.onTaskFinished((data, worker) => {
-            this._logger.debug(`task ${data.taskId} finished with worker ${data.workerId}`);
+            this._logger.debug(`task ${data.taskId} finished with worker ${data.workerId}`, data.result);
+
+            this._tasks.setResult(data.taskId, data.result);
 
             this._tasks.markFinished(data.taskId);
 

@@ -19,10 +19,11 @@ worker
     .onTask((task) => {
 
         var timeout = ((worker.id == 0) ? 1 : worker.id) * 100;
+        // var timeout = 100;
 
         setTimeout(() => {
             logger.info(`ECHO ${task.data.msg}`);
-            task.done();
+            task.done(`ECHO ${task.data.msg}`);
         }, timeout);
 
     })

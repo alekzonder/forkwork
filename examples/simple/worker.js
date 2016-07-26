@@ -18,7 +18,7 @@ worker
     })
     .onTask((task) => {
         logger.info(`ECHO ${task.data.msg}`);
-        task.done();
+        task.done({echoDone: `ECHO ${task.data.msg}`});
     })
     .up()
     .then(() => {

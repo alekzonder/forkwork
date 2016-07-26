@@ -230,6 +230,8 @@ class ManagerWorker {
         this._forkChannel.onTaskFinished((data) => {
             this._stat.finished++;
 
+            this._logger.trace('got taskFinished', data);
+
             this._status = Statuses.FREE;
 
             this._workerChannel.taskFinished(data, this);

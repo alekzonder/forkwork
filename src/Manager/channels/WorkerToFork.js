@@ -112,8 +112,9 @@ class WorkerToForkChannel {
      * @param  {Function} cb
      */
     onTaskFinished(cb) {
-        this._events.on('taskFinished', (taskId) => {
-            cb({workerId: this._id, taskId: taskId});
+        this._events.on('taskFinished', (data) => {
+            this._logger.trace('onTaskFinished!!!', data);
+            cb({workerId: this._id, taskId: data.id, result: data.result});
         });
     }
 

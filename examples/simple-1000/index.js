@@ -45,8 +45,10 @@ manager
             .onTaskStarted((id) => {
                 // logger.info(`task ${id} started`);
             })
-            .onTaskFinished((id) => {
+            .onTaskFinished((data) => {
                 done++;
+
+                logger.info(`task ${data.id} done with result = ${data.result}`);
 
                 if (started && started === done && manager.tasks.isQueueEmpty()) {
                     logger.info('all tasks done');

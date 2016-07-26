@@ -201,6 +201,7 @@ class Tasks {
 
         if (!task) {
             this._logger.error(`no task ${id} on markFinished`);
+            return;
         }
 
         task.finished();
@@ -233,9 +234,23 @@ class Tasks {
 
         if (!task) {
             this._logger.error(`no task ${id} on markFatal`);
+            return;
         }
 
         task.fatal(error);
+    }
+
+    setResult(id, result) {
+        var task = this.get(id);
+
+        if (!task) {
+            this._logger.error(`no task ${id} on setResult`);
+            return false;
+        }
+
+        task.result = result;
+
+        return true;
     }
 
     /**

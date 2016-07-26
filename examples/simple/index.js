@@ -44,10 +44,10 @@ manager
             .onTaskStarted((id) => {
                 logger.info(`task ${id} started`);
             })
-            .onTaskFinished((id) => {
+            .onTaskFinished((data) => {
                 done++;
 
-                logger.info(`task ${id} done`);
+                logger.info(`task ${data.id} done with result = `, data.result);
 
                 if (done === 3) {
                     logger.info('all tasks done');

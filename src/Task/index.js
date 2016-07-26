@@ -17,6 +17,7 @@ class Task {
         this._task  = {
             id: (id) ? id : null,
             data: (data) ? data : null,
+            result: null,
             creationDate: this._getTime(),
             startDate: null,
             finishDate: null
@@ -42,6 +43,24 @@ class Task {
     get data() {
         // clone ??
         return this._task.data;
+    }
+
+    /**
+     * result getter
+     *
+     * @return {*}
+     */
+    get result() {
+        return this._task.result;
+    }
+
+    /**
+     * result setter
+     *
+     * @param  {*} value
+     */
+    set result(value) {
+        this._task.result = value;
     }
 
     /**
@@ -81,16 +100,19 @@ class Task {
 
     /**
      * send task finished event
+     *
+     * @param {Object} result
      */
     finished() {
         this._task.finishDate = this._getTime();
-        this._emit('taskFinished', this.id);
+        this._emit('taskFinished', {id: this.id, result: this.result});
     }
 
     /**
      * alias for finished
      */
-    done() {
+    done(result) {
+        this.result = result;
         this.finished();
     }
 
