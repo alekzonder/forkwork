@@ -26,6 +26,14 @@ manager
 
         manager.tasks
             .onTaskFinished((id) => {
+
+                // got result of task
+                var task = manager.tasks.get(id);
+
+                var result = task.result;
+
+                logger.info(`task ${id} finished with result = `, result);
+
                 done++;
 
                 if (done === 3) {

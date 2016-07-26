@@ -10,6 +10,34 @@ npm i --save forkwork
 
 3 tasks, 3 workers
 
+## worker.js
+
+```js
+var logger = require('log4js').getLogger('worker');
+var Worker = require('forkwork/Worker');
+
+var worker = new Worker(logger);
+
+// setup worker
+worker.onTask((task) => {
+        var echo = `ECHO ${task.data.msg}`;
+
+        console.log(echo);
+
+        // return result
+        task.done({status: true, echo: echo});
+    });
+
+worker.up()
+    .then(() => {
+        worker.online();
+    })
+    .catch((error) => {
+        logger.error(error);
+        process.exit(1);
+    });
+```
+
 ## manager.js
 
 ```js
@@ -32,6 +60,14 @@ manager.up()
 
         manager.tasks
             .onTaskFinished((id) => {
+
+                // got result of task
+                var task = manager.tasks.get(id);
+
+                var result = task.result;
+
+                logger.info(`task ${id} finished with result = `, result);
+
                 done++;
 
                 if (done == 3) {
@@ -50,29 +86,4 @@ manager.up()
         manager.exit(1);
     });
 
-```
-
-
-## worker.js
-
-```js
-var logger = require('log4js').getLogger('worker');
-var Worker = require('forkwork/Worker');
-
-var worker = new Worker(logger);
-
-// setup worker
-worker.onTask((task) => {
-        console.log(`ECHO ${task.data.msg}`);
-        task.done();
-    });
-
-worker.up()
-    .then(() => {
-        worker.online();
-    })
-    .catch((error) => {
-        logger.error(error);
-        process.exit(1);
-    });
 ```

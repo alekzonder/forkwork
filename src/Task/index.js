@@ -105,7 +105,7 @@ class Task {
      */
     finished() {
         this._task.finishDate = this._getTime();
-        this._emit('taskFinished', {id: this.id, result: this.result});
+        this._emit('taskFinished', this.id);
     }
 
     /**

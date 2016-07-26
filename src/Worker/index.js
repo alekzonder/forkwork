@@ -196,10 +196,10 @@ class ForkWorker {
                 this._workerChannel.taskStarted(this._task.id);
             });
 
-            this._events.on('taskFinished', (data) => {
-                this._logger.trace('Worker._events.on(taskFinished)', this._task.id, data);
+            this._events.on('taskFinished', (id) => {
+                this._logger.trace('Worker._events.on(taskFinished)', id);
                 this._i = this._task.id;
-                this._workerChannel.taskFinished(data);
+                this._workerChannel.taskFinished({id: id, result: this._task.result});
                 this._task = null;
 
             });

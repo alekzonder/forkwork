@@ -11,9 +11,12 @@ var worker = new Worker(logger, {});
 // setup worker
 worker
     .onTask((task) => {
-        logger.info(`ECHO ${task.data.msg}`);
+        var echo = `ECHO ${task.data.msg}`;
 
-        task.done();
+        console.log(echo);
+
+        // return result
+        task.done({status: true, echo: echo});
     })
     .up()
     .then(() => {
