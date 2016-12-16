@@ -12,9 +12,9 @@ class Task {
      * @param  {Number} id
      * @param  {object} data
      */
-    constructor(id, data) {
+    constructor (id, data) {
 
-        this._task  = {
+        this._task = {
             id: (id) ? id : null,
             data: (data) ? data : null,
             result: null,
@@ -31,7 +31,7 @@ class Task {
      *
      * @return {String}
      */
-    get id() {
+    get id () {
         return this._task.id;
     }
 
@@ -40,7 +40,7 @@ class Task {
      *
      * @return {Object}
      */
-    get data() {
+    get data () {
         // clone ??
         return this._task.data;
     }
@@ -50,7 +50,7 @@ class Task {
      *
      * @return {*}
      */
-    get result() {
+    get result () {
         return this._task.result;
     }
 
@@ -59,7 +59,7 @@ class Task {
      *
      * @param  {*} value
      */
-    set result(value) {
+    set result (value) {
         this._task.result = value;
     }
 
@@ -68,7 +68,7 @@ class Task {
      *
      * @param  {EventEmitter} events
      */
-    bindTo(events) {
+    bindTo (events) {
         this._events = events;
     }
 
@@ -77,7 +77,7 @@ class Task {
      *
      * @return {String}
      */
-    serialize() {
+    serialize () {
         return JSON.stringify(this._task);
     }
 
@@ -86,14 +86,14 @@ class Task {
      *
      * @param  {String} raw
      */
-    unserialize(raw) {
+    unserialize (raw) {
         this._task = JSON.parse(raw);
     }
 
     /**
      * send task started event
      */
-    started() {
+    started () {
         this._task.startDate = this._getTime();
         this._emit('taskStarted', this.id);
     }
@@ -103,7 +103,7 @@ class Task {
      *
      * @param {Object} result
      */
-    finished() {
+    finished () {
         this._task.finishDate = this._getTime();
         this._emit('taskFinished', this.id);
     }
@@ -111,7 +111,7 @@ class Task {
     /**
      * alias for finished
      */
-    done(result) {
+    done (result) {
         this.result = result;
         this.finished();
     }
@@ -121,7 +121,7 @@ class Task {
      *
      * @param  {Error} error
      */
-    error(error) {
+    error (error) {
         this._emit('taskError', error);
     }
 
@@ -130,7 +130,7 @@ class Task {
      *
      * @param  {Error} error
      */
-    fatal(error) {
+    fatal (error) {
         this._emit('taskFatal', error);
     }
 
@@ -139,7 +139,7 @@ class Task {
      *
      * @return {Number}
      */
-    getExecTime() {
+    getExecTime () {
         if (!this._task.startDate || !this._task.finishDate) {
             return null;
         }
@@ -153,7 +153,7 @@ class Task {
      * @private
      * @return {Number}
      */
-    _getTime() {
+    _getTime () {
         return (new Date).getTime();
     }
 
@@ -162,7 +162,7 @@ class Task {
      * @param  {String} event
      * @param  {Object} data
      */
-    _emit(event, data) {
+    _emit (event, data) {
         if (!this._events || !this._events.emit) {
             return;
         }

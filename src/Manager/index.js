@@ -30,7 +30,7 @@ class Manager {
      * @param  {logger} logger
      * @param  {Object} rawConfig
      */
-    constructor(logger, rawConfig) {
+    constructor (logger, rawConfig) {
 
         this._logger = this._wrap(logger, 'forkwork');
 
@@ -59,7 +59,7 @@ class Manager {
      *
      * @return {Workers}
      */
-    get workers() {
+    get workers () {
         return this._workers;
     }
 
@@ -68,7 +68,7 @@ class Manager {
      *
      * @return {Tasks}
      */
-    get tasks() {
+    get tasks () {
         return this._tasks;
     }
 
@@ -77,7 +77,7 @@ class Manager {
      *
      * @return {Promise}
      */
-    up() {
+    up () {
 
         return new Promise((resolve, reject) => {
 
@@ -138,7 +138,7 @@ class Manager {
      *
      * @return {Promise}
      */
-    shutdown() {
+    shutdown () {
 
         return new Promise((resolve, reject) => {
 
@@ -161,9 +161,9 @@ class Manager {
      *
      * @param  {Number} code
      */
-    exit(code) {
+    exit (code) {
         if (typeof code == 'undefined') {
-            code  = 0;
+            code = 0;
         }
 
         this.shutdown()
@@ -181,7 +181,7 @@ class Manager {
      *
      * @param  {Function} cb
      */
-    onFatal(cb) {
+    onFatal (cb) {
         this._events.on('fatal', cb);
         return this;
     }
@@ -191,7 +191,7 @@ class Manager {
      *
      * @param  {Function} cb
      */
-    onError(cb) {
+    onError (cb) {
         this._events.on('error', cb);
         return this;
     }
@@ -201,7 +201,7 @@ class Manager {
      *
      * @param  {Function} cb
      */
-    onClose(cb) {
+    onClose (cb) {
         this._events.on('close', cb);
         return this;
     }
@@ -211,7 +211,7 @@ class Manager {
      *
      * @private
      */
-    _initListeners() {
+    _initListeners () {
 
         this._workerChannel.onFatal((error, worker) => {
             var workerId = (worker && worker.id) ? worker.id : null;
@@ -248,7 +248,7 @@ class Manager {
      * @param  {Object} rawConfig
      * @return {Promise}
      */
-    _prepareConfig(rawConfig) {
+    _prepareConfig (rawConfig) {
 
         return new Promise((resolve, reject) => {
 
@@ -286,7 +286,7 @@ class Manager {
      * @param  {Object} config
      * @return {Promise}
      */
-    _checkConfig(config) {
+    _checkConfig (config) {
 
         var configSchema = {
             forkCount: joi.number().required().min(1).max(100),
@@ -321,7 +321,7 @@ class Manager {
      * @param  {String} category
      * @return {log4js-nested}
      */
-    _wrap(logger, category) {
+    _wrap (logger, category) {
         return log4jsNestedWrap(logger, category);
     }
 }

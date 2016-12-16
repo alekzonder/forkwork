@@ -4,7 +4,7 @@ var log4js = require('log4js');
 
 var logger = log4js.getLogger('simple');
 
-log4js.setGlobalLogLevel('INFO');
+log4js.setGlobalLogLevel('TRACE');
 
 if (typeof process.env.VERBOSE != 'undefined') {
     log4js.setGlobalLogLevel(process.env.VERBOSE);

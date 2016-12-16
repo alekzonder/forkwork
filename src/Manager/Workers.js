@@ -18,7 +18,7 @@ class Workers {
      * @param  {Object} config
      * @param  {EventEmitter} workerEvents
      */
-    constructor(logger, config, workerEvents) {
+    constructor (logger, config, workerEvents) {
         this._logger = logger;
         this._config = config;
         this._workerEvents = workerEvents;
@@ -32,7 +32,7 @@ class Workers {
      *
      * @return {Object}
      */
-    get workers() {
+    get workers () {
         return this._workers;
     }
 
@@ -41,7 +41,7 @@ class Workers {
      *
      * @return {Promise}
      */
-    setup() {
+    setup () {
 
         return new Promise((resolve, reject) => {
 
@@ -81,7 +81,7 @@ class Workers {
      *
      * @return {Promise}
      */
-    up() {
+    up () {
 
         return new Promise((resolve, reject) => {
             var promises = [];
@@ -110,7 +110,7 @@ class Workers {
      *
      * @return {Promise}
      */
-    shutdown() {
+    shutdown () {
 
         return new Promise((resolve, reject) => {
             var promises = [];
@@ -138,7 +138,7 @@ class Workers {
      * @param  {Number} id
      * @return {ManagerWorker}
      */
-    get(id) {
+    get (id) {
         if (!this._workers[id]) {
             return null;
         }
@@ -151,7 +151,7 @@ class Workers {
      *
      * @return {Null|ManagerWorker}
      */
-    getFreeWorker() {
+    getFreeWorker () {
         var free;
 
         for (var i in this._workers) {
@@ -173,7 +173,7 @@ class Workers {
      *
      * @return {Object}
      */
-    getWorkersStat() {
+    getWorkersStat () {
         var stat = {};
 
         for (var i in this._workers) {
@@ -189,7 +189,7 @@ class Workers {
      *
      * @param  {Function} cb
      */
-    onTaskStarted(cb) {
+    onTaskStarted (cb) {
         this._workerEvents.on('taskStarted', cb);
     }
 
@@ -198,7 +198,7 @@ class Workers {
      *
      * @param  {Function} cb
      */
-    onTaskFinished(cb) {
+    onTaskFinished (cb) {
         this._workerEvents.on('taskFinished', cb);
     }
 
@@ -207,7 +207,7 @@ class Workers {
      *
      * @param  {Function} cb
      */
-    onTaskError(cb) {
+    onTaskError (cb) {
         this._workerEvents.on('taskError', cb);
     }
 
@@ -216,7 +216,7 @@ class Workers {
      *
      * @param  {Function} cb
      */
-    onTaskFatal(cb) {
+    onTaskFatal (cb) {
         this._workerEvents.on('taskFatal', cb);
     }
 }

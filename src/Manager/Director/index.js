@@ -15,7 +15,7 @@ class Director {
      * @param  {Tasks} tasks
      * @param  {EventEmitter} globalEvents
      */
-    constructor(logger, workers, tasks, globalEvents) {
+    constructor (logger, workers, tasks, globalEvents) {
         this._logger = logger;
         this._workers = workers;
         this._tasks = tasks;
@@ -27,7 +27,7 @@ class Director {
      *
      * @return {Promise}
      */
-    init() {
+    init () {
 
         return new Promise((resolve, reject) => {
 
@@ -42,7 +42,7 @@ class Director {
     /**
      * @private
      */
-    _bindEvents() {
+    _bindEvents () {
 
         this._tasks.onTaskAdded((task) => {
 

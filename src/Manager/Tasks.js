@@ -15,7 +15,7 @@ class Tasks {
      * @param  {logger} logger
      * @param  {Object} config
      */
-    constructor(logger, config) {
+    constructor (logger, config) {
         this._logger = logger;
         this._config = config;
 
@@ -33,7 +33,7 @@ class Tasks {
      * @param {Object} data
      * @return {Task}
      */
-    add(data) {
+    add (data) {
         var task = this.createTask(data);
 
         this._tasks[task.id] = task;
@@ -50,7 +50,7 @@ class Tasks {
      *
      * @return {Task}
      */
-    getNextTask() {
+    getNextTask () {
 
         if (!this._queue.length) {
             return null;
@@ -66,7 +66,7 @@ class Tasks {
      *
      * @param  {Number} id
      */
-    returnToQueue(id) {
+    returnToQueue (id) {
         if (!this._tasks[id]) {
             return;
         }
@@ -80,7 +80,7 @@ class Tasks {
      * @param  {Object} data
      * @return {Task}
      */
-    createTask(data) {
+    createTask (data) {
         var id = this._generateNewId();
 
         var task = new Task(id, data);
@@ -96,7 +96,7 @@ class Tasks {
      * @param  {Function} cb
      * @return {this}
      */
-    onTaskAdded(cb) {
+    onTaskAdded (cb) {
         this._events.on('taskAdded', cb);
         return this;
     }
@@ -107,7 +107,7 @@ class Tasks {
      * @param  {Function} cb
      * @return {this}
      */
-    onTaskStarted(cb) {
+    onTaskStarted (cb) {
         this._events.on('taskStarted', cb);
         return this;
     }
@@ -118,7 +118,7 @@ class Tasks {
      * @param  {Function} cb
      * @return {this}
      */
-    onTaskFinished(cb) {
+    onTaskFinished (cb) {
         this._events.on('taskFinished', cb);
         return this;
     }
@@ -129,7 +129,7 @@ class Tasks {
      * @param  {Function} cb
      * @return {this}
      */
-    onTaskError(cb) {
+    onTaskError (cb) {
         this._events.on('taskError', cb);
         return this;
     }
@@ -140,7 +140,7 @@ class Tasks {
      * @param  {Function} cb
      * @return {this}
      */
-    onTaskFatal(cb) {
+    onTaskFatal (cb) {
         this._events.on('taskFatal', cb);
         return this;
     }
@@ -150,7 +150,7 @@ class Tasks {
      *
      * @return {Number}
      */
-    getQueueSize() {
+    getQueueSize () {
         return this._queue.length;
     }
 
@@ -159,7 +159,7 @@ class Tasks {
      *
      * @return {Boolean}
      */
-    isQueueEmpty() {
+    isQueueEmpty () {
         return this.getQueueSize() == 0;
     }
 
@@ -169,7 +169,7 @@ class Tasks {
      * @param  {String} id
      * @return {Task|Null}
      */
-    get(id) {
+    get (id) {
         if (!this._tasks[id]) {
             return null;
         }
@@ -181,7 +181,7 @@ class Tasks {
      *
      * @param  {String} id
      */
-    markStarted(id) {
+    markStarted (id) {
         var task = this.get(id);
 
         if (!task) {
@@ -196,7 +196,7 @@ class Tasks {
      *
      * @param  {String} id
      */
-    markFinished(id) {
+    markFinished (id) {
         var task = this.get(id);
 
         if (!task) {
@@ -213,7 +213,7 @@ class Tasks {
      * @param  {String} id
      * @param  {Error} error
      */
-    markErrored(id, error) {
+    markErrored (id, error) {
         var task = this.get(id);
 
         if (!task) {
@@ -229,7 +229,7 @@ class Tasks {
      * @param  {String} id
      * @param  {Error} error
      */
-    markFatal(id, error) {
+    markFatal (id, error) {
         var task = this.get(id);
 
         if (!task) {
@@ -240,7 +240,7 @@ class Tasks {
         task.fatal(error);
     }
 
-    setResult(id, result) {
+    setResult (id, result) {
         var task = this.get(id);
 
         if (!task) {
@@ -259,7 +259,7 @@ class Tasks {
      * @private
      * @return {String}
      */
-    _generateNewId() {
+    _generateNewId () {
         this._nextId++;
         return 't' + this._nextId;
     }

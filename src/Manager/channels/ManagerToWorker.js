@@ -13,7 +13,7 @@ class ManagerToWorkerChannel {
      * @param  {EventEmitter} events
      * @param  {ManagerWorker} worker
      */
-    constructor(logger, events, worker) {
+    constructor (logger, events, worker) {
         this._logger = logger;
         this._worker = null;
         this._events = events;
@@ -28,7 +28,7 @@ class ManagerToWorkerChannel {
      *
      * @param  {Function} cb
      */
-    onFatal(cb) {
+    onFatal (cb) {
         this._events.on('fatal', cb);
     }
 
@@ -38,7 +38,7 @@ class ManagerToWorkerChannel {
      * @param  {error} error
      * @param  {ManagerWorker} worker
      */
-    fatal(error, worker) {
+    fatal (error, worker) {
         this._events.emit('fatal', error, (this._worker) ? this._worker : worker);
     }
 
@@ -47,7 +47,7 @@ class ManagerToWorkerChannel {
      *
      * @param  {Function} cb
      */
-    onError(cb) {
+    onError (cb) {
         this._events.on('error', cb);
     }
 
@@ -57,7 +57,7 @@ class ManagerToWorkerChannel {
      * @param  {Error} error
      * @param  {ManagerWorker} worker
      */
-    error(error, worker) {
+    error (error, worker) {
         this._events.emit('error', error, (this._worker) ? this._worker : worker);
     }
 
@@ -66,7 +66,7 @@ class ManagerToWorkerChannel {
      *
      * @param  {Function} cb
      */
-    onClose(cb) {
+    onClose (cb) {
         this._events.on('close', cb);
     }
 
@@ -76,7 +76,7 @@ class ManagerToWorkerChannel {
      * @param  {Number} code
      * @param  {ManagerWorker} worker
      */
-    close(code, worker) {
+    close (code, worker) {
         this._events.emit('close', code, (this._worker) ? this._worker : worker);
     }
 
@@ -85,7 +85,7 @@ class ManagerToWorkerChannel {
      *
      * @param  {Function} cb
      */
-    onOnline(cb) {
+    onOnline (cb) {
         this._events.on('online', cb);
     }
 
@@ -94,7 +94,7 @@ class ManagerToWorkerChannel {
      *
      * @param  {ManagerWorker} worker
      */
-    online(worker) {
+    online (worker) {
         this._logger.trace(`online ${worker.id}`);
         this._events.emit('online', (this._worker) ? this._worker : worker);
     }
@@ -105,7 +105,7 @@ class ManagerToWorkerChannel {
      * @param  {Object} data
      * @param  {ManagerWorker} worker
      */
-    taskStarted(data, worker) {
+    taskStarted (data, worker) {
         this._logger.trace(`taskStarted ${worker.id}`, data);
         this._events.emit('taskStarted', data, (this._worker) ? this._worker : worker);
     }
@@ -116,7 +116,7 @@ class ManagerToWorkerChannel {
      * @param  {Object} data
      * @param  {ManagerWorker} worker
      */
-    taskFinished(data, worker) {
+    taskFinished (data, worker) {
         this._logger.trace(`taskFinished ${worker.id}`, data);
         this._events.emit('taskFinished', data, (this._worker) ? this._worker : worker);
     }
@@ -127,7 +127,7 @@ class ManagerToWorkerChannel {
      * @param  {Error} error
      * @param  {ManagerWorker} worker
      */
-    taskError(error, worker) {
+    taskError (error, worker) {
         this._logger.trace(`taskError ${worker.id}`, error);
         this._events.emit('taskError', error, (this._worker) ? this._worker : worker);
     }
@@ -138,7 +138,7 @@ class ManagerToWorkerChannel {
      * @param  {Error} error
      * @param  {ManagerWorker} worker
      */
-    taskFatal(error, worker) {
+    taskFatal (error, worker) {
         this._logger.trace(`taskFatal ${worker.id}`, error);
         this._events.emit('taskFatal', error, (this._worker) ? this._worker : worker);
     }

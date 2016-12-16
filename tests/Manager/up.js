@@ -13,9 +13,9 @@ var getMock = function (mock) {
     return require('../mocks/' + mock);
 };
 
-describe('Manager', function() {
+describe('Manager', function () {
 
-    describe('validate logger interface', function() {
+    describe('validate logger interface', function () {
 
         var loggerBase = getMock('logger');
 
@@ -23,7 +23,7 @@ describe('Manager', function() {
 
         _.each(loggerMethods, (method) => {
 
-            it('should error on invalid logger object. without method ' + method, function() {
+            it('should error on invalid logger object. without method ' + method, function () {
 
                 var loggerClone = _.cloneDeep(loggerBase);
 
@@ -47,7 +47,7 @@ describe('Manager', function() {
 
         _.each(loggerMethods, (method) => {
 
-            it('should error on invalid logger object. method ' + method + ' not a function', function() {
+            it('should error on invalid logger object. method ' + method + ' not a function', function () {
 
                 var loggerClone = _.cloneDeep(loggerBase);
 
@@ -71,9 +71,9 @@ describe('Manager', function() {
 
     });
 
-    describe('up', function() {
+    describe('up', function () {
 
-        it('should error on empty config', function() {
+        it('should error on empty config', function () {
 
             var config = {};
 
@@ -86,7 +86,7 @@ describe('Manager', function() {
 
         });
 
-        it('should error on invalid worker path', function() {
+        it('should error on invalid worker path', function () {
 
             var config = {
                 forksCount: 2,

@@ -20,7 +20,7 @@ class ForkWorker {
      * @param  {log4js-nested} logger
      * @param  {Object} config
      */
-    constructor(logger, config) {
+    constructor (logger, config) {
 
         this._logger = logger;
         this._config = config;
@@ -44,7 +44,7 @@ class ForkWorker {
      *
      * @return {String}
      */
-    get id() {
+    get id () {
         return this._config.id;
     }
 
@@ -53,7 +53,7 @@ class ForkWorker {
      *
      * @return {log4js-nested}
      */
-    get logger() {
+    get logger () {
         return this._logger;
     }
 
@@ -62,7 +62,7 @@ class ForkWorker {
      *
      * @return {Object}
      */
-    get config() {
+    get config () {
         return this._config;
     }
 
@@ -71,7 +71,7 @@ class ForkWorker {
      *
      * @return {Promise}
      */
-    up() {
+    up () {
 
         return new Promise((resolve, reject) => {
 
@@ -104,7 +104,7 @@ class ForkWorker {
     /**
      * send online event
      */
-    online() {
+    online () {
         this._workerChannel.online();
     }
 
@@ -114,7 +114,7 @@ class ForkWorker {
      * @param  {Function} cb
      * @return {this}
      */
-    preInit(cb) {
+    preInit (cb) {
         this._preInit = cb;
         return this;
     }
@@ -125,7 +125,7 @@ class ForkWorker {
      * @param  {Function} cb
      * @return {this}
      */
-    postInit(cb) {
+    postInit (cb) {
         this._postInit = cb;
         return this;
     }
@@ -135,7 +135,7 @@ class ForkWorker {
      *
      * @param  {Function} cb
      */
-    onShutdown(cb) {
+    onShutdown (cb) {
         this._shutdownCallback = cb;
         return this;
     }
@@ -145,7 +145,7 @@ class ForkWorker {
      *
      * @param  {Function} cb
      */
-    onTask(cb) {
+    onTask (cb) {
 
         this._workerChannel.onTask((rawTask) => {
             this._task = new Task();
@@ -166,7 +166,7 @@ class ForkWorker {
      *
      * @param  {Function} cb
      */
-    onError(cb) {
+    onError (cb) {
         this._events.on('error', cb);
         return this;
     }
@@ -175,7 +175,7 @@ class ForkWorker {
      * @private
      * @return {Promise}
      */
-    _init() {
+    _init () {
 
         return new Promise((resolve, reject) => {
 

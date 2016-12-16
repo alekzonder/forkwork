@@ -4,12 +4,15 @@
   "description": "task manager using forks",
   "main": "index.js",
   "files": [
-      "index.js",
-      "src"
+    "index.js",
+    "src"
   ],
   "scripts": {
     "test": "./node_modules/.bin/mocha tests",
-    "docs": "./node_modules/.bin/jsdoc ./ -c ./.jsdoc.json --verbose && open ./docs/index.html"
+    "docs": "rm -rf ./esdoc && ./node_modules/.bin/esdoc ./ -c ./.esdoc.json",
+    "docs:open": "npm run docs && open ./esdoc/index.html",
+    "lint": "./node_modules/.bin/eslint -c .eslintrc.js examples src tests",
+    "lint:fix": "./node_modules/.bin/eslint -c .eslintrc.js --fix examples src tests"
   },
   "publishConfig": {
     "registry": "http://sinopia.app.s/"
@@ -23,15 +26,16 @@
   "dependencies": {
     "joi": "^9.2.0",
     "lodash": "^4.11.1",
-    "log4js": "^0.6.35",
-    "log4js-nested": "^0.2.0"
+    "log4js": "^1.0.1",
+    "log4js-nested": "^0.3.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
+    "esdoc": "^0.4.8",
+    "esdoc-node": "^1.0.0",
+    "eslint": "^3.11.1",
     "deride": "^1.1.0",
-    "jsdoc": "^3.4.0",
-    "minami": "^1.1.1",
     "mocha": "^3.1.2",
     "rewire": "^2.5.1"
   }

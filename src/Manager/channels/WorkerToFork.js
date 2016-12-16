@@ -14,7 +14,7 @@ class WorkerToForkChannel {
      * @param  {logger} logger
      * @param  {ChildProcess} fork
      */
-    constructor(logger, fork) {
+    constructor (logger, fork) {
         this._id = null;
 
         this._logger = logger;
@@ -55,7 +55,7 @@ class WorkerToForkChannel {
      *
      * @return {String}
      */
-    get id() {
+    get id () {
         return this._id;
     }
 
@@ -73,7 +73,7 @@ class WorkerToForkChannel {
      *
      * @param  {Function} cb
      */
-    onFatal(cb) {
+    onFatal (cb) {
         this._events.on('fatal', cb);
     }
 
@@ -82,7 +82,7 @@ class WorkerToForkChannel {
      *
      * @param  {Function} cb
      */
-    onError(cb) {
+    onError (cb) {
         this._events.on('error', cb);
     }
 
@@ -91,7 +91,7 @@ class WorkerToForkChannel {
      *
      * @param  {Function} cb
      */
-    onClose(cb) {
+    onClose (cb) {
         this._fork.on('close', cb);
     }
 
@@ -100,7 +100,7 @@ class WorkerToForkChannel {
      *
      * @param  {Function} cb
      */
-    onTaskStarted(cb) {
+    onTaskStarted (cb) {
         this._events.on('taskStarted', (taskId) => {
             cb({workerId: this._id, taskId: taskId});
         });
@@ -111,7 +111,7 @@ class WorkerToForkChannel {
      *
      * @param  {Function} cb
      */
-    onTaskFinished(cb) {
+    onTaskFinished (cb) {
         this._events.on('taskFinished', (data) => {
             this._logger.trace('onTaskFinished!!!', data);
             cb({workerId: this._id, taskId: data.id, result: data.result});
@@ -123,7 +123,7 @@ class WorkerToForkChannel {
      *
      * @param  {Function} cb
      */
-    onTaskError(cb) {
+    onTaskError (cb) {
         this._events.on('taskError', (error) => {
             cb(error);
         });
@@ -134,7 +134,7 @@ class WorkerToForkChannel {
      *
      * @param  {Function} cb
      */
-    onTaskFatal(cb) {
+    onTaskFatal (cb) {
         this._events.on('taskFatal', (error) => {
             cb(error);
         });
@@ -145,7 +145,7 @@ class WorkerToForkChannel {
      *
      * @param  {Number} code
      */
-    close(code) {
+    close (code) {
         this._closed = true;
         // this._events.emit('close', code, (this._worker) ? this._worker : worker);
     }
@@ -155,7 +155,7 @@ class WorkerToForkChannel {
      *
      * @param  {Function} cb
      */
-    onOnline(cb) {
+    onOnline (cb) {
         this._events.once('online', cb);
     }
 
@@ -164,7 +164,7 @@ class WorkerToForkChannel {
      *
      * @param  {ManagerWorker} worker
      */
-    online(worker) {
+    online (worker) {
         this._events.emit('online', (this._worker) ? this._worker : worker);
     }
 
@@ -173,7 +173,7 @@ class WorkerToForkChannel {
      *
      * @param  {Object} config
      */
-    init(config) {
+    init (config) {
         this._send('init', config);
     }
 
@@ -182,7 +182,7 @@ class WorkerToForkChannel {
      *
      * @return {Promise}
      */
-    shutdown() {
+    shutdown () {
 
         return new Promise((resolve, reject) => {
             this._logger.trace(`shutdown. send to worker fork ${this._id}, wait for close`);
@@ -209,7 +209,7 @@ class WorkerToForkChannel {
      *
      * @param  {task} task
      */
-    sendTask(task) {
+    sendTask (task) {
         this._send('task', task);
     }
 
@@ -218,7 +218,7 @@ class WorkerToForkChannel {
      *
      * @return {Boolean}
      */
-    isClosed() {
+    isClosed () {
         return this._closed;
     }
 
@@ -229,7 +229,7 @@ class WorkerToForkChannel {
      * @param  {String} type
      * @param  {Object} data
      */
-    _send(type, data) {
+    _send (type, data) {
 
         this._logger.trace(`send message "${type}"`, data);
 

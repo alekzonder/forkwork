@@ -15,7 +15,7 @@ class WorkerChannel {
      * @constructor
      * @param  {log4js} logger
      */
-    constructor(logger) {
+    constructor (logger) {
         this._logger = logger;
 
         this._events = new EventEmitter();
@@ -48,7 +48,7 @@ class WorkerChannel {
      *
      * @param  {Function} cb
      */
-    onInit(cb) {
+    onInit (cb) {
         this._events.once('init', cb);
     }
 
@@ -57,7 +57,7 @@ class WorkerChannel {
      *
      * @param  {Function} cb
      */
-    onShutdown(cb) {
+    onShutdown (cb) {
         this._events.once('shutdown', cb);
     }
 
@@ -66,14 +66,14 @@ class WorkerChannel {
      *
      * @param  {Function} cb
      */
-    onTask(cb) {
+    onTask (cb) {
         this._events.on('task', cb);
     }
 
     /**
      * send online event
      */
-    online() {
+    online () {
         this._send('online');
     }
 
@@ -82,7 +82,7 @@ class WorkerChannel {
      *
      * @param  {Number} id
      */
-    taskStarted(id) {
+    taskStarted (id) {
         this._send('taskStarted', id);
     }
 
@@ -92,7 +92,7 @@ class WorkerChannel {
      * @param  {Number} id
      * @param {Object} result
      */
-    taskFinished(data) {
+    taskFinished (data) {
         this._logger.trace('WorkerChannel.taskFinished', data);
         this._send('taskFinished', {
             id: data.id,
@@ -105,7 +105,7 @@ class WorkerChannel {
      *
      * @param  {Number} id
      */
-    taskError(error) {
+    taskError (error) {
         this._send('taskError', this._processError(error));
     }
 
@@ -114,7 +114,7 @@ class WorkerChannel {
      *
      * @param  {Number} id
      */
-    taskFatal(error) {
+    taskFatal (error) {
         this._send('taskFatal', this._processError(error));
     }
 
@@ -124,7 +124,7 @@ class WorkerChannel {
      * @param  {String} type
      * @param  {Object} data
      */
-    _send(type, data) {
+    _send (type, data) {
         var message = {type: type, data: data};
         this._logger.trace(`send message`, message);
         process.send(message);
@@ -135,7 +135,7 @@ class WorkerChannel {
      * @param  {Error} error
      * @return {Object}
      */
-    _processError(error) {
+    _processError (error) {
         return {
             message: error.message,
             name: error.name,

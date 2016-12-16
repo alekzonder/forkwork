@@ -1,7 +1,7 @@
 var log4js = require('log4js');
 var logger = log4js.getLogger('worker');
 
-log4js.setGlobalLogLevel('INFO');
+log4js.setGlobalLogLevel('TRACE');
 
 var Worker = require(__dirname + '/../../src/Worker');
 
@@ -29,4 +29,3 @@ worker
         logger.error(error);
         process.exit(1);
     });
-

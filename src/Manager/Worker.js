@@ -24,7 +24,7 @@ class ManagerWorker {
      * @param  {logger} logger
      * @param  {Object} config
      */
-    constructor(logger, config) {
+    constructor (logger, config) {
 
         this._logger = logger;
 
@@ -61,7 +61,7 @@ class ManagerWorker {
      *
      * @return {Number}
      */
-    get id() {
+    get id () {
         return this._config.id;
     }
 
@@ -70,11 +70,11 @@ class ManagerWorker {
      *
      * @return {Boolean}
      */
-    isFree() {
+    isFree () {
         return this._status == Statuses.FREE;
     }
 
-    isBusy() {
+    isBusy () {
         return this._status == Statuses.BUSY;
     }
 
@@ -84,7 +84,7 @@ class ManagerWorker {
      * @param  {WorkerToForkChannel} workerChannel
      * @return {Promise}
      */
-    up(workerChannel) {
+    up (workerChannel) {
 
         return new Promise((resolve, reject) => {
 
@@ -136,7 +136,7 @@ class ManagerWorker {
             this._init();
 
             var timeout = setTimeout(() => {
-                reject(new Error('startup timeout for worker ' + this.id));
+                reject(new Error('startup timeout ' + this._config.startupTimeout + 'ms for worker ' + this.id));
             }, this._config.startupTimeout);
 
 
@@ -155,7 +155,7 @@ class ManagerWorker {
      *
      * @return {Promise}
      */
-    shutdown() {
+    shutdown () {
 
         return new Promise((resolve, reject) => {
 
@@ -184,7 +184,7 @@ class ManagerWorker {
      *
      * @param  {Task} task
      */
-    sendTask(task) {
+    sendTask (task) {
         if (!this.isFree()) {
             return false;
         }
@@ -205,7 +205,7 @@ class ManagerWorker {
      *
      * @return {Object}
      */
-    getStat() {
+    getStat () {
         return this._stat;
     }
 
@@ -214,7 +214,7 @@ class ManagerWorker {
      *
      * @private
      */
-    _init() {
+    _init () {
         this._logger.trace('bind fork channel events');
 
         this._forkChannel.init({
@@ -260,7 +260,7 @@ class ManagerWorker {
      * @param  {Object} data
      * @return {Error}
      */
-    _makeError(data) {
+    _makeError (data) {
         if (!data) {
             data = {
                 message: 'unknown error'
