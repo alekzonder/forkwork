@@ -18,6 +18,9 @@
     "type": "git",
     "url": "git@github.com:alekzonder/forkwork.git"
   },
+  "publishConfig": {
+    "registry": "http://registry.npmjs.org/"
+  },
   "author": "alekzonder <alekzonder@gmail.com>",
   "license": "MIT",
   "dependencies": {
