@@ -87,3 +87,7 @@ manager.up()
     });
 
 ```
+
+# LICENSE
+
+MIT

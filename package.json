@@ -1,6 +1,6 @@
 {
   "name": "forkwork",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "task manager using forks",
   "main": "index.js",
   "files": [
@@ -14,12 +14,9 @@
     "lint": "./node_modules/.bin/eslint -c .eslintrc.js examples src tests",
     "lint:fix": "./node_modules/.bin/eslint -c .eslintrc.js --fix examples src tests"
   },
-  "publishConfig": {
-    "registry": "http://sinopia.app.s/"
-  },
   "repository": {
     "type": "git",
-    "url": "ssh://git@git.rn/~a.vasilenko/forkwork.git"
+    "url": "git@github.com:alekzonder/forkwork.git"
   },
   "author": "alekzonder <alekzonder@gmail.com>",
   "license": "MIT",
