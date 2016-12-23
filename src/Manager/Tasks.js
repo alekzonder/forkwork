@@ -46,6 +46,43 @@ class Tasks {
     }
 
     /**
+     * get task by id
+     *
+     * @param  {String} id
+     * @return {Task|Null}
+     */
+    get (id) {
+        if (!this._tasks[id]) {
+            return null;
+        }
+        return this._tasks[id];
+    }
+
+    /**
+     * remove task from storage
+     *
+     * @param {Number} id
+     * @return {Boolean}
+     */
+    remove (id) {
+        if (this._tasks[id]) {
+            delete this._tasks[id];
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * get list of task ids from storage
+     *
+     * @return {Array}
+     */
+    getIds () {
+        return Object.keys(this._tasks);
+    }
+
+    /**
      * get next task from queue
      *
      * @return {Task}
@@ -161,19 +198,6 @@ class Tasks {
      */
     isQueueEmpty () {
         return this.getQueueSize() == 0;
-    }
-
-    /**
-     * get task by id
-     *
-     * @param  {String} id
-     * @return {Task|Null}
-     */
-    get (id) {
-        if (!this._tasks[id]) {
-            return null;
-        }
-        return this._tasks[id];
     }
 
     /**

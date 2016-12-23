@@ -18,8 +18,8 @@ worker
     })
     .onTask((task) => {
 
-        var timeout = ((worker.id == 0) ? 1 : worker.id) * 100;
-        // var timeout = 100;
+        // var timeout = ((worker.id == 0) ? 1 : worker.id) * 100;
+        var timeout = 100;
 
         setTimeout(() => {
             logger.info(`ECHO ${task.data.msg}`);
@@ -36,4 +36,3 @@ worker
         logger.error(error);
         process.exit(1);
     });
-

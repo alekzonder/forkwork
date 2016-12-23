@@ -22,6 +22,7 @@ var manager = new Manager(log4js, config);
 manager
     .up()
     .then((workersCount) => {
+        logger.info(`up ${workersCount} workers`);
         var done = 0;
 
         manager.tasks
