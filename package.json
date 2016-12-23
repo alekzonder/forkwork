@@ -1,6 +1,6 @@
 {
   "name": "forkwork",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "task manager using forks",
   "main": "index.js",
   "files": [
