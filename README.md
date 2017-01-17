@@ -1,5 +1,10 @@
 # forkwork
 
+[![bitHound Code](https://www.bithound.io/github/alekzonder/forkwork/badges/code.svg)](https://www.bithound.io/github/alekzonder/forkwork)
+[![bitHound Dependencies](https://www.bithound.io/github/alekzonder/forkwork/badges/dependencies.svg)](https://www.bithound.io/github/alekzonder/forkwork/master/dependencies/npm)
+
+[![NPM](https://nodei.co/npm/forkwork.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/forkwork/)
+
 # install
 
 ```
