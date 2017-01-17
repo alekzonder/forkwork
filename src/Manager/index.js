@@ -1,6 +1,5 @@
 'use strict';
 
-var path = require('path');
 var EventEmitter = require('events').EventEmitter;
 
 var _ = require('lodash');
@@ -180,6 +179,7 @@ class Manager {
      * on Fatal error callback
      *
      * @param  {Function} cb
+     * @return {this}
      */
     onFatal (cb) {
         this._events.on('fatal', cb);
@@ -190,6 +190,7 @@ class Manager {
      * on Error callback
      *
      * @param  {Function} cb
+     * @return {this}
      */
     onError (cb) {
         this._events.on('error', cb);
@@ -200,6 +201,7 @@ class Manager {
      * on close callback
      *
      * @param  {Function} cb
+     * @return {this}
      */
     onClose (cb) {
         this._events.on('close', cb);
