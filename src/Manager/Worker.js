@@ -219,7 +219,8 @@ class ManagerWorker {
 
         this._forkChannel.init({
             id: this._config.id,
-            logLevel: this._logger.level
+            logLevel: this._logger.level,
+            initData: this._config.initData
         });
 
         this._forkChannel.onTaskStarted((data) => {
